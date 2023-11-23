@@ -3,7 +3,7 @@ terraform {
     bucket         = "703951826048-ca-central-1-terraform-state"
     dynamodb_table = "703951826048-ca-central-1-terraform-state-locks"
     key            = "terraform.tfstate"
-    encrypt        = "true"
+    encrypt        = true
     kms_key_id     = "alias/aws/s3"
     region         = "ca-central-1"
   }

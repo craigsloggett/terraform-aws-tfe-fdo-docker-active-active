@@ -57,18 +57,28 @@ resource "aws_vpc_endpoint_route_table_association" "private" {
 }
 
 # EC2 Security Groups
-resource "aws_security_group" "bastion" {
-  name        = "tfe-bastion-sg"
-  description = "Bastion Hosts Security Group"
+
+resource "aws_security_group" "tfe_ec2" {
+  name        = "tfe-ec2-sg"
+  description = "TFE Hosts Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "tfe-bastion-sg"
+    Name = "tfe-ec2-sg"
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "bastion" {
-  security_group_id = aws_security_group.bastion.id
+resource "aws_vpc_security_group_ingress_rule" "tfe_ec2" {
+  security_group_id = aws_security_group.tfe_ec2.id
+
+  referenced_security_group_id = aws_security_group.tfe_alb.id
+  ip_protocol                  = "tcp"
+  from_port                    = 80
+  to_port                      = 80
+}
+
+resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_ssh" {
+  security_group_id = aws_security_group.tfe_ec2.id
 
   cidr_ipv4   = "${local.my_ip}/32"
   ip_protocol = "tcp"
@@ -76,8 +86,36 @@ resource "aws_vpc_security_group_ingress_rule" "bastion" {
   to_port     = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "bastion" {
-  security_group_id = aws_security_group.bastion.id
+resource "aws_vpc_security_group_egress_rule" "tfe_ec2" {
+  security_group_id = aws_security_group.tfe_ec2.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+}
+
+# Application Load Balancer Security Group
+
+resource "aws_security_group" "tfe_alb" {
+  name        = "tfe-alb-sg"
+  description = "Application Load Balancer Security Group"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = "tfe-alb-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "tfe_alb" {
+  security_group_id = aws_security_group.tfe_alb.id
+
+  cidr_ipv4   = "${local.my_ip}/32"
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
+}
+
+resource "aws_vpc_security_group_egress_rule" "tfe_alb" {
+  security_group_id = aws_security_group.tfe_alb.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
