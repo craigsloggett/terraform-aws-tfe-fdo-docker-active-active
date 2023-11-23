@@ -1,3 +1,11 @@
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
+}
+
+locals {
+  my_ip = chomp(data.http.myip.response_body)
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.2.0"
@@ -49,4 +57,28 @@ resource "aws_vpc_endpoint_route_table_association" "private" {
 }
 
 # EC2 Security Groups
-# resource "vpc_security_group"
+resource "aws_security_group" "bastion" {
+  name        = "tfe-bastion-sg"
+  description = "Bastion Hosts Security Group"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = "tfe-bastion-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "bastion" {
+  security_group_id = aws_security_group.bastion.id
+
+  cidr_ipv4   = "${local.my_ip}/32"
+  ip_protocol = "tcp"
+  from_port   = 22
+  to_port     = 22
+}
+
+resource "aws_vpc_security_group_egress_rule" "bastion" {
+  security_group_id = aws_security_group.bastion.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+}
