@@ -19,33 +19,15 @@ resource "aws_lb_listener" "tfe" {
   }
 }
 
-#resource "aws_lb_target_group" "tfe" {
-#  name     = "tfe-web-alb-tg"
-#  port     = 443
-#  protocol = "HTTPS"
-#  vpc_id   = module.vpc.vpc_id
-#
-#  health_check {
-#    protocol            = "HTTPS"
-#    path                = "/_health_check"
-#    healthy_threshold   = 2
-#    unhealthy_threshold = 7
-#    timeout             = 5
-#    interval            = 30
-#    matcher             = 200
-#  }
-#}
-
-# TEST
 resource "aws_lb_target_group" "tfe" {
   name     = "tfe-web-alb-tg"
-  port     = 80
-  protocol = "HTTP"
+  port     = 443
+  protocol = "HTTPS"
   vpc_id   = module.vpc.vpc_id
 
   health_check {
-    protocol            = "HTTP"
-    path                = "/"
+    protocol            = "HTTPS"
+    path                = "/_health_check"
     healthy_threshold   = 2
     unhealthy_threshold = 7
     timeout             = 5
