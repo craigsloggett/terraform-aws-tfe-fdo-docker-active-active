@@ -60,24 +60,6 @@ resource "aws_security_group" "tfe_bastion" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_bastion_http" {
-  security_group_id = aws_security_group.tfe_bastion.id
-
-  cidr_ipv4   = "${local.my_ip}/32"
-  ip_protocol = "tcp"
-  from_port   = 80
-  to_port     = 80
-}
-
-resource "aws_vpc_security_group_ingress_rule" "tfe_bastion_https" {
-  security_group_id = aws_security_group.tfe_bastion.id
-
-  cidr_ipv4   = "${local.my_ip}/32"
-  ip_protocol = "tcp"
-  from_port   = 443
-  to_port     = 443
-}
-
 resource "aws_vpc_security_group_ingress_rule" "tfe_bastion_ssh" {
   security_group_id = aws_security_group.tfe_bastion.id
 
@@ -106,7 +88,7 @@ resource "aws_security_group" "tfe_ec2" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_http" {
+resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_https" {
   security_group_id = aws_security_group.tfe_ec2.id
 
   cidr_ipv4   = "0.0.0.0/0"
@@ -118,7 +100,7 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_http" {
 resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_ssh" {
   security_group_id = aws_security_group.tfe_ec2.id
 
-  cidr_ipv4   = "${local.my_ip}/32"
+  cidr_ipv4   = "10.0.0.0/16"
   ip_protocol = "tcp"
   from_port   = 22
   to_port     = 22

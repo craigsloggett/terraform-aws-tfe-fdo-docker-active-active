@@ -13,7 +13,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
 
   key_name                    = aws_key_pair.self.key_name
-  user_data                   = file("scripts/tfe-user-data.sh")
+  user_data                   = file("cloud-init/bastion")
   user_data_replace_on_change = true
   iam_instance_profile        = aws_iam_instance_profile.tfe.name
 

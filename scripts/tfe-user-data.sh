@@ -89,7 +89,7 @@ services:
       TFE_TLS_CERT_FILE: "/etc/ssl/private/terraform-enterprise/cert.pem"
       TFE_TLS_KEY_FILE: "/etc/ssl/private/terraform-enterprise/key.pem"
       TFE_TLS_CA_BUNDLE_FILE: "/etc/ssl/private/terraform-enterprise/bundle.pem"
-      TFE_IACT_SUBNETS: "10.0.0.0/8"
+      TFE_IACT_SUBNETS: "10.0.0.0/16"
     cap_add:
       - IPC_LOCK
     read_only: true
