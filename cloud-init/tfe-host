@@ -30,3 +30,29 @@ groups:
 system_info:
   default_user:
     groups: [docker]
+
+write_files:
+  - path: /run/terraform-enterprise/generate-tls-certificates.sh
+    content: |
+      #!/bin/sh
+
+      mkdir -p /etc/ssl/private/terraform-enterprise
+      openssl req -x509 -nodes -newkey rsa:4096 -keyout /etc/ssl/private/terraform-enterprise/key.pem -out /etc/ssl/private/terraform-enterprise/cert.pem -sha256 -days 365 -subj "/C=CA/O=HashiCorp/CN=tfe.craig-sloggett.sbx.hashidemos.io"
+      cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
+    permissions: '0755'
+
+runcmd:
+  - [ sh, "/run/terraform-enterprise/generate-tls-certificates.sh" ]
+
+write_files:
+  - path: /run/terraform-enterprise/grab-tfe-license.sh
+    content: |
+      #!/bin/sh
+
+      mkdir -p /etc/ssl/private/terraform-enterprise
+      openssl req -x509 -nodes -newkey rsa:4096 -keyout /etc/ssl/private/terraform-enterprise/key.pem -out /etc/ssl/private/terraform-enterprise/cert.pem -sha256 -days 365 -subj "/C=CA/O=HashiCorp/CN=tfe.craig-sloggett.sbx.hashidemos.io"
+      cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
+    permissions: '0755'
+
+runcmd:
+  - [ sh, "/run/terraform-enterprise/generate-tls-certificates.sh" ]

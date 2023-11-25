@@ -1,28 +1,3 @@
-data "aws_ami" "debian" {
-  most_recent = true
-  owners      = ["136693071363"]
-
-  filter {
-    name   = "name"
-    values = ["debian-12-amd64-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-}
-
 resource "aws_key_pair" "self" {
   key_name   = "public-key"
   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM2/hbsAhrsTGuRaQZCMxnCYjpBtjCj9ekXMiY2dq6Yr"
@@ -37,8 +12,17 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
 
   key_name                    = aws_key_pair.self.key_name
-  user_data                   = file("cloud-init/bastion")
+  user_data                   = file("scripts/tfe-user-data.sh")
   user_data_replace_on_change = true
+  iam_instance_profile        = aws_iam_instance_profile.tfe.name
+
+  root_block_device {
+    volume_type = "gp3"
+    volume_size = 50
+    throughput  = 125
+    iops        = 3000
+    encrypted   = true
+  }
 
   metadata_options {
     http_tokens = "required"
@@ -55,7 +39,11 @@ resource "aws_launch_template" "tfe" {
   image_id      = data.aws_ami.debian.id
   instance_type = "t3.medium"
   key_name      = aws_key_pair.self.key_name
-  user_data     = base64encode(file("cloud-init/tfe-host"))
+  user_data     = base64encode(file("scripts/tfe-user-data.sh"))
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.tfe.name
+  }
 
   network_interfaces {
     security_groups = [aws_security_group.tfe_ec2.id]
@@ -76,6 +64,14 @@ resource "aws_launch_template" "tfe" {
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "TFE Host"
+    }
   }
 }
 

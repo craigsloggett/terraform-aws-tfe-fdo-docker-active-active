@@ -2,13 +2,13 @@
 name: terraform-enterprise
 services:
   tfe:
-    image: images.releases.hashicorp.com/hashicorp/terraform-enterprise:<vYYYYMM-#>
+    image: images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
     environment:
       TFE_LICENSE: "<Hashicorp license>"
       TFE_HOSTNAME: "<TFE hostname (DNS) e.g. terraform.example.com>"
       TFE_ENCRYPTION_PASSWORD: "<Encryption password>"
       TFE_OPERATIONAL_MODE: "disk"
-      TFE_DISK_CACHE_VOLUME_NAME: "${COMPOSE_PROJECT_NAME}_terraform-enterprise-cache"
+      TFE_DISK_CACHE_VOLUME_NAME: "terraform-enterprise-cache"
       TFE_TLS_CERT_FILE: "/etc/ssl/private/terraform-enterprise/cert.pem"
       TFE_TLS_KEY_FILE: "/etc/ssl/private/terraform-enterprise/key.pem"
       TFE_TLS_CA_BUNDLE_FILE: "/etc/ssl/private/terraform-enterprise/bundle.pem"
@@ -28,10 +28,10 @@ services:
         source: /var/run/docker.sock
         target: /run/docker.sock
       - type: bind
-        source: ./certs
+        source: /etc/ssl/private/terraform-enterprise
         target: /etc/ssl/private/terraform-enterprise
       - type: bind
-        source: <mounted_disk_path_on_host>
+        source: /var/lib/terraform-enterprise
         target: /var/lib/terraform-enterprise
       - type: volume
         source: terraform-enterprise-cache

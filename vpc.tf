@@ -1,11 +1,3 @@
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
-
-locals {
-  my_ip = chomp(data.http.myip.response_body)
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.2.0"

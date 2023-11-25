@@ -1,7 +1,3 @@
-data "aws_route53_zone" "tfe" {
-  name = "craig-sloggett.sbx.hashidemos.io"
-}
-
 resource "aws_route53_record" "cert_validation_record" {
   name    = element(aws_acm_certificate.tfe.domain_validation_options[*].resource_record_name, 0)
   type    = element(aws_acm_certificate.tfe.domain_validation_options[*].resource_record_type, 0)
