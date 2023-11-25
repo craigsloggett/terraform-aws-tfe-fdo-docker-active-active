@@ -83,7 +83,7 @@ resource "aws_autoscaling_group" "tfe" {
   max_size                  = 1
   desired_capacity          = 1
   vpc_zone_identifier       = module.vpc.private_subnets
-  health_check_grace_period = 3600
+  health_check_grace_period = 300
   health_check_type         = "ELB"
 
   launch_template {
