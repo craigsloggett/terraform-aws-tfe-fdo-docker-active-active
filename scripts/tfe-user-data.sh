@@ -44,6 +44,18 @@ usermod -aG docker "${USERNAME}"
 
 # TLS Certificate
 
+tfe_hostname="tfe.craig-sloggett.sbx.hashidemos.io"
+
+hashicorp_license="$(aws secretsmanager get-secret-value \
+	--secret-id tfe/license \
+	--query SecretString \
+	--output text)"
+
+encryption_password="$(aws secretsmanager get-secret-value \
+	--secret-id tfe/encryption_password \
+	--query SecretString \
+	--output text)"
+
 mkdir -p /etc/ssl/private/terraform-enterprise
 
 openssl req -x509 \
@@ -52,26 +64,13 @@ openssl req -x509 \
 	-keyout /etc/ssl/private/terraform-enterprise/key.pem \
 	-out /etc/ssl/private/terraform-enterprise/cert.pem \
 	-sha256 -days 365 \
-	-subj "/C=CA/O=HashiCorp/CN=tfe.craig-sloggett.sbx.hashidemos.io"
+	-subj "/C=CA/O=HashiCorp/CN=${tfe_hostname}"
 
 cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
 
 # Terraform Enterprise
 
 mkdir -p /var/lib/terraform-enterprise
-
-ec2_token="$(curl -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" \
-	-X PUT "http://169.254.169.254/latest/api/token")"
-ec2_hostname=$(curl -H "X-aws-ec2-metadata-token: ${ec2_token}" \
-	"http://169.254.169.254/latest/meta-data/public-hostname")
-hashicorp_license="$(aws secretsmanager get-secret-value \
-	--secret-id tfe/license \
-	--query SecretString \
-	--output text)"
-encryption_password="$(aws secretsmanager get-secret-value \
-	--secret-id tfe/encryption_password \
-	--query SecretString \
-	--output text)"
 
 mkdir -p /run/terraform-enterprise
 
@@ -83,7 +82,7 @@ services:
     image: images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
     environment:
       TFE_LICENSE: "${hashicorp_license}"
-      TFE_HOSTNAME: "${ec2_hostname}"
+      TFE_HOSTNAME: "${tfe_hostname}"
       TFE_ENCRYPTION_PASSWORD: "${encryption_password}"
       TFE_OPERATIONAL_MODE: "disk"
       TFE_DISK_CACHE_VOLUME_NAME: "terraform-enterprise-cache"

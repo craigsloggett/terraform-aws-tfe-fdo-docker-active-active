@@ -48,8 +48,6 @@ resource "aws_vpc_endpoint_route_table_association" "private" {
   vpc_endpoint_id = aws_vpc_endpoint.s3.id
 }
 
-######################################################################
-
 # Bastion Security Group
 
 resource "aws_security_group" "tfe_bastion" {
@@ -96,8 +94,6 @@ resource "aws_vpc_security_group_egress_rule" "tfe_bastion" {
   ip_protocol = "-1"
 }
 
-######################################################################
-
 # EC2 Security Groups
 
 resource "aws_security_group" "tfe_ec2" {
@@ -113,19 +109,10 @@ resource "aws_security_group" "tfe_ec2" {
 resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_http" {
   security_group_id = aws_security_group.tfe_ec2.id
 
-  referenced_security_group_id = aws_security_group.tfe_alb.id
-  ip_protocol                  = "tcp"
-  from_port                    = 80
-  to_port                      = 80
-}
-
-resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_https" {
-  security_group_id = aws_security_group.tfe_ec2.id
-
-  referenced_security_group_id = aws_security_group.tfe_alb.id
-  ip_protocol                  = "tcp"
-  from_port                    = 443
-  to_port                      = 443
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
 }
 
 resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_ssh" {
@@ -159,7 +146,7 @@ resource "aws_security_group" "tfe_alb" {
 resource "aws_vpc_security_group_ingress_rule" "tfe_alb" {
   security_group_id = aws_security_group.tfe_alb.id
 
-  cidr_ipv4   = "${local.my_ip}/32"
+  cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
   from_port   = 443
   to_port     = 443

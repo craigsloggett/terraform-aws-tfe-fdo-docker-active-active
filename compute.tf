@@ -4,6 +4,7 @@ resource "aws_key_pair" "self" {
 }
 
 # Bastion Host
+
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.debian.id
   instance_type               = "t3a.medium"
@@ -34,6 +35,7 @@ resource "aws_instance" "bastion" {
 }
 
 # TFE Hosts
+
 resource "aws_launch_template" "tfe" {
   name          = "tfe-web-asg-lt"
   image_id      = data.aws_ami.debian.id
