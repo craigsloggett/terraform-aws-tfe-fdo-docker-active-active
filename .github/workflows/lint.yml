@@ -52,5 +52,6 @@ jobs:
           tflint_version: v0.50.3
       - name: Lint Terraform Files
         run: |
+          terraform init
           tflint --init
           tflint --recursive --format=compact
