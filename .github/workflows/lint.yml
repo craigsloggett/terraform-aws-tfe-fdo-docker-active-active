@@ -37,11 +37,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
-      - name: Cache TFLint Plugins
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # 4.0.2
-        with:
-          path: ${{ github.action_path }}/.tflint.d/plugins
-          key: tflint-${{ hashFiles('.tflint.hcl') }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
         with:
@@ -50,6 +45,11 @@ jobs:
         uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
         with:
           tflint_version: v0.50.3
+      - name: Cache TFLint Plugins
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # 4.0.2
+        with:
+          path: ${{ github.action_path }}/.tflint.d/plugins
+          key: tflint-${{ hashFiles('.tflint.hcl') }}
       - name: Lint Terraform Files
         run: |
           terraform init --backend=false
