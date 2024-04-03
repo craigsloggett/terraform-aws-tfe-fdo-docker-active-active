@@ -57,4 +57,4 @@ jobs:
           tflint --recursive --format=compact
       - name: Output Path Contents
         run: |
-          cd ${{ github.action_path }} && ls -la
+          cd ${{ github.action_path }} && ls -la .tflint.d
