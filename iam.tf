@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "tfe_assume_role" {
 }
 
 resource "aws_iam_role" "tfe" {
-  name               = "tfe-instance-role"
+  name               = var.ec2_iam_role_name
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.tfe_assume_role.json
 }
@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "tfe_secrets" {
 }
 
 resource "aws_iam_instance_profile" "tfe" {
-  name = "tfe-instance-profile"
+  name = var.ec2_instance_profile_name
   path = "/"
   role = aws_iam_role.tfe.name
 }

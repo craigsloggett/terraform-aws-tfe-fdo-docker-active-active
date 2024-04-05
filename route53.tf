@@ -7,7 +7,7 @@ resource "aws_route53_record" "cert_validation_record" {
 }
 
 resource "aws_route53_record" "alias_record" {
-  name    = "tfe.craig-sloggett.sbx.hashidemos.io"
+  name    = var.route53_alias_record_name
   zone_id = data.aws_route53_zone.tfe.zone_id
   type    = "A"
   alias {

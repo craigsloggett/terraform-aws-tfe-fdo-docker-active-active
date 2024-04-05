@@ -9,7 +9,7 @@ resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.debian.id
   instance_type               = "t3a.medium"
   subnet_id                   = module.vpc.public_subnets[0]
-  vpc_security_group_ids      = [aws_security_group.tfe_bastion.id]
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
   associate_public_ip_address = true
 
   key_name                    = aws_key_pair.self.key_name
@@ -48,7 +48,7 @@ resource "aws_launch_template" "tfe" {
   }
 
   network_interfaces {
-    security_groups = [aws_security_group.tfe_ec2.id]
+    security_groups = [aws_security_group.tfe.id]
   }
 
   block_device_mappings {
