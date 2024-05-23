@@ -41,13 +41,7 @@ resource "aws_launch_template" "tfe" {
   image_id      = data.aws_ami.debian.id
   instance_type = "t3.medium"
   key_name      = aws_key_pair.self.key_name
-
-  user_data = base64encode(templatefile("scripts/tfe-user-data.sh", {
-    USERNAME        = "admin"
-    docker_gpg_url  = "https://download.docker.com/linux/debian/gpg"
-    apt_keyring_dir = "/usr/share/keyrings"
-    tfe_hostname    = var.route53_alias_record_name
-  }))
+  user_data     = base64encode(file("scripts/tfe-user-data.sh"))
 
   iam_instance_profile {
     name = aws_iam_instance_profile.tfe.name
