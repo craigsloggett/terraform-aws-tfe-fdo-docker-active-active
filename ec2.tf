@@ -1,6 +1,6 @@
 resource "aws_key_pair" "self" {
   key_name   = "tfe-public-key"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM2/hbsAhrsTGuRaQZCMxnCYjpBtjCj9ekXMiY2dq6Yr"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILospQ0z+2yER9Q7Jh+4X91IRU+FzztRbkYg5t9C0B6o"
 }
 
 # Bastion Host
