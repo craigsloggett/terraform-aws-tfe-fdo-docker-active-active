@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # The default username assigned to UID 1000 in AWS EC2 instances.
-#USERNAME="admin"
+USERNAME="admin"
 
 # Docker
 
@@ -12,8 +12,8 @@ DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https ca-certificates curl gnupg
 
 # Setup Docker's apt repository.
-#docker_gpg_url="https://download.docker.com/linux/debian/gpg"
-#apt_keyring_dir="/usr/share/keyrings"
+docker_gpg_url="https://download.docker.com/linux/debian/gpg"
+apt_keyring_dir="/usr/share/keyrings"
 
 curl -fsSL "${docker_gpg_url}" | gpg --dearmor -o "${apt_keyring_dir}/docker.gpg"
 
@@ -44,17 +44,17 @@ usermod -aG docker "${USERNAME}"
 
 # TLS Certificate
 
-#tfe_hostname="tfe.craig-sloggett.sbx.hashidemos.io"
+tfe_hostname="tfe.craig-sloggett.sbx.hashidemos.io"
 
-#hashicorp_license="$(aws secretsmanager get-secret-value \
-#  --secret-id tfe/license \
-#  --query SecretString \
-#  --output text)"
-#
-#encryption_password="$(aws secretsmanager get-secret-value \
-#  --secret-id tfe/encryption_password \
-#  --query SecretString \
-#  --output text)"
+hashicorp_license="$(aws secretsmanager get-secret-value \
+  --secret-id tfe/license \
+  --query SecretString \
+  --output text)"
+
+encryption_password="$(aws secretsmanager get-secret-value \
+  --secret-id tfe/encryption_password \
+  --query SecretString \
+  --output text)"
 
 mkdir -p /etc/ssl/private/terraform-enterprise
 
@@ -81,15 +81,9 @@ services:
   tfe:
     image: images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
     environment:
-      TFE_LICENSE: "$(aws secretsmanager get-secret-value \
-  --secret-id tfe/license \
-  --query SecretString \
-  --output text)"
+      TFE_LICENSE: "${hashicorp_license}"
       TFE_HOSTNAME: "${tfe_hostname}"
-      TFE_ENCRYPTION_PASSWORD: "$(aws secretsmanager get-secret-value \
-    --secret-id tfe/encryption_password \
-    --query SecretString \
-    --output text)"
+      TFE_ENCRYPTION_PASSWORD: "${encryption_password}"
       TFE_OPERATIONAL_MODE: "disk"
       TFE_DISK_CACHE_VOLUME_NAME: "terraform-enterprise-cache"
       TFE_TLS_CERT_FILE: "/etc/ssl/private/terraform-enterprise/cert.pem"
@@ -123,7 +117,7 @@ volumes:
   terraform-enterprise-cache:
 EOF
 
-aws secretsmanager get-secret-value --secret-id tfe/license --query SecretString --output text |
+echo "${hashicorp_license}" |
   docker login --username terraform images.releases.hashicorp.com --password-stdin
 
 docker pull images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
