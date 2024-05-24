@@ -5,11 +5,18 @@ set -euo pipefail
 # The default username assigned to UID 1000 in AWS EC2 instances.
 USERNAME="admin"
 
-# Docker
+# Wait for the network to be available.
+while ! ping -c 1 -W 1 8.8.8.8; do
+  echo "Waiting for network..."
+  sleep 1
+done
 
+# Update the system and install required utilities.
 DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https ca-certificates curl gnupg
+
+# Docker
 
 # Setup Docker's apt repository.
 docker_gpg_url="https://download.docker.com/linux/debian/gpg"
