@@ -62,6 +62,7 @@ jobs:
           tflint_version: v0.49.0
       - name: TFLint
         run: |
+          terraform init
           tflint --init
           tflint --recursive --format=compact
   terraform-docs:
