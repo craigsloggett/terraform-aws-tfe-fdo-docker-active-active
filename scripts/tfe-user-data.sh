@@ -5,11 +5,18 @@ set -euo pipefail
 # The default username assigned to UID 1000 in AWS EC2 instances.
 USERNAME="admin"
 
-# Docker
+# Wait for the network to be available.
+while ! ping -c 1 -W 1 8.8.8.8; do
+  echo "Waiting for network..."
+  sleep 1
+done
 
+# Update the system and install required utilities.
 DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https ca-certificates curl gnupg
+
+# Docker
 
 # Setup Docker's apt repository.
 docker_gpg_url="https://download.docker.com/linux/debian/gpg"
@@ -41,6 +48,36 @@ DEBIAN_FRONTEND=noninteractive apt-get -yq install docker-ce docker-ce-cli unzip
 
 # Add the admin user to the docker group (created automatically as part of install).
 usermod -aG docker "${USERNAME}"
+
+# CloudWatch
+
+mkdir -p /var/lib/journald-cloudwatch-logs/state
+
+cat <<'EOF' >/usr/local/etc/journald-cloudwatch-logs.conf
+log_group  = "tfe-journald"
+state_file = "/var/lib/journald-cloudwatch-logs/state"
+EOF
+
+cat <<'EOF' >/etc/systemd/system/journald-cloudwatch-logs.service
+[Unit]
+Description=journald-cloudwatch-logs
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=nobody
+Group=nobody
+ExecStart=/usr/local/bin/journald-cloudwatch-logs /usr/local/etc/journald-cloudwatch-logs.conf
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+EOF
+
+# Pull the binary that has been built from source.
+sudo docker run --rm -it -v /usr/local/bin:/tmp/bin xueshanf/journald-cloudwatch-logs cp /usr/local/bin/journald-cloudwatch-logs /tmp/bin/journald-cloudwatch-logs
+
+systemctl daemon-reload
+systemctl enable --now journald-cloudwatch-logs.service
 
 # TLS Certificate
 

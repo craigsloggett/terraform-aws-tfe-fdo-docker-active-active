@@ -45,6 +45,10 @@ resource "aws_launch_template" "tfe" {
   key_name      = aws_key_pair.self.key_name
   user_data     = base64encode(file("scripts/tfe-user-data.sh"))
 
+  monitoring {
+    enabled = true
+  }
+
   iam_instance_profile {
     name = aws_iam_instance_profile.tfe.name
   }
