@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+# The version of TFE to deploy.
+TFE_VERSION="v202311-1"
 # The default username assigned to UID 1000 in AWS EC2 instances.
 USERNAME="admin"
 
@@ -86,7 +88,7 @@ cat <<EOF >/run/terraform-enterprise/docker-compose.yml
 name: terraform-enterprise
 services:
   tfe:
-    image: images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
+    image: "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${TFE_VERSION}"
     environment:
       TFE_LICENSE: "${hashicorp_license}"
       TFE_HOSTNAME: "${tfe_hostname}"
@@ -127,7 +129,7 @@ EOF
 echo "${hashicorp_license}" |
   docker login --username terraform images.releases.hashicorp.com --password-stdin
 
-docker pull images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
+docker pull "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${TFE_VERSION}"
 
 cat <<'EOF' >/etc/systemd/system/terraform-enterprise.service
 [Unit]
