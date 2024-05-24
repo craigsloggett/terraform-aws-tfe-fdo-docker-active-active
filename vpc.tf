@@ -62,6 +62,7 @@ resource "aws_security_group" "bastion" {
 
 resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
   security_group_id = aws_security_group.bastion.id
+  description       = "Allow SSH traffic ingress to the Bastion Host from a single IP."
 
   cidr_ipv4   = "${local.my_ip}/32"
   ip_protocol = "tcp"
@@ -71,6 +72,7 @@ resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
 
 resource "aws_vpc_security_group_egress_rule" "bastion" {
   security_group_id = aws_security_group.bastion.id
+  description       = "Allow all outbound traffic from the Bastion Host."
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
@@ -90,6 +92,7 @@ resource "aws_security_group" "tfe" {
 
 resource "aws_vpc_security_group_ingress_rule" "tfe_https" {
   security_group_id = aws_security_group.tfe.id
+  description       = "Allow HTTPS traffic ingress to the TFE Hosts from all networks."
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
@@ -99,6 +102,7 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_https" {
 
 resource "aws_vpc_security_group_ingress_rule" "tfe_ssh" {
   security_group_id = aws_security_group.tfe.id
+  description       = "Allow SSH traffic ingress to the TFE Hosts from private subnets."
 
   cidr_ipv4   = "10.0.0.0/16"
   ip_protocol = "tcp"
@@ -108,6 +112,7 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ssh" {
 
 resource "aws_vpc_security_group_egress_rule" "tfe" {
   security_group_id = aws_security_group.tfe.id
+  description       = "Allow all outbound traffic from the TFE Hosts."
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
@@ -127,6 +132,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_vpc_security_group_ingress_rule" "alb" {
   security_group_id = aws_security_group.alb.id
+  description       = "Allow HTTPS traffic ingress to the application load balancer from all networks."
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
@@ -136,6 +142,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb" {
 
 resource "aws_vpc_security_group_egress_rule" "alb" {
   security_group_id = aws_security_group.alb.id
+  description       = "Allow all outbound traffic from the application load balancer."
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"

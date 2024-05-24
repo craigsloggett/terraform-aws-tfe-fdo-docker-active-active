@@ -1,9 +1,10 @@
 resource "aws_lb" "tfe" {
-  name               = var.lb_name
-  load_balancer_type = "application"
-  internal           = false
-  subnets            = module.vpc.public_subnets
-  security_groups    = [aws_security_group.alb.id]
+  name                       = var.lb_name
+  load_balancer_type         = "application"
+  internal                   = false
+  subnets                    = module.vpc.public_subnets
+  security_groups            = [aws_security_group.alb.id]
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_listener" "tfe" {
