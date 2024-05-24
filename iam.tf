@@ -9,8 +9,10 @@ data "aws_iam_policy_document" "cloudwatch" {
       "logs:DescribeLogStreams"
     ]
     resources = [
-      aws_cloudwatch_log_group.bastion_host_journald.arn,
-      aws_cloudwatch_log_stream.bastion_host_journald.arn
+      aws_cloudwatch_log_group.bastion_journald.arn,
+      aws_cloudwatch_log_group.tfe_journald.arn,
+      aws_cloudwatch_log_stream.bastion_journald.arn,
+      aws_cloudwatch_log_stream.tfe_journald.arn
     ]
   }
 }

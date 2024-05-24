@@ -49,4 +49,3 @@ locals {
   bucket_name = "${local.account_id}-${local.region}-terraform-enterprise"
   my_ip       = chomp(data.http.myip.response_body)
 }
-
