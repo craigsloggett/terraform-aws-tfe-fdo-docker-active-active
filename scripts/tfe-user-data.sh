@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # The version of TFE to deploy.
-TFE_VERSION="v202311-1"
+TFE_VERSION="v202401-2"
 # The default username assigned to UID 1000 in AWS EC2 instances.
 USERNAME="admin"
 
