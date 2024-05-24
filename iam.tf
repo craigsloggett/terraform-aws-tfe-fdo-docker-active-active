@@ -1,26 +1,3 @@
-# CloudWatch
-
-data "aws_iam_policy_document" "cloudwatch" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:DescribeLogStreams"
-    ]
-    resources = [
-      "arn:aws:logs:*:*:log-group:*",
-      "arn:aws:logs:*:*:log-group:*:log-stream:*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "cloudwatch" {
-  name   = "TerraformEnterpriseCloudWatch"
-  path   = "/"
-  policy = data.aws_iam_policy_document.cloudwatch.json
-}
-
 # Secrets Manager
 
 data "aws_iam_policy_document" "tfe_secrets" {
@@ -69,11 +46,6 @@ resource "aws_iam_role" "tfe" {
   name               = var.ec2_iam_role_name
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.tfe_assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "cloudwatch" {
-  role       = aws_iam_role.tfe.name
-  policy_arn = aws_iam_policy.cloudwatch.arn
 }
 
 resource "aws_iam_role_policy_attachment" "tfe_secrets" {
