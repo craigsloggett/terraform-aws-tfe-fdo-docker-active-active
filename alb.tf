@@ -1,9 +1,9 @@
 resource "aws_lb" "tfe" {
-  name               = "tfe-web-alb"
+  name               = var.lb_name
   load_balancer_type = "application"
   internal           = false
   subnets            = module.vpc.public_subnets
-  security_groups    = [aws_security_group.tfe_alb.id]
+  security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "tfe" {
@@ -20,7 +20,7 @@ resource "aws_lb_listener" "tfe" {
 }
 
 resource "aws_lb_target_group" "tfe" {
-  name     = "tfe-web-alb-tg"
+  name     = var.lb_target_group_name
   port     = 443
   protocol = "HTTPS"
   vpc_id   = module.vpc.vpc_id

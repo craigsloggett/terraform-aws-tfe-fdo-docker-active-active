@@ -2,7 +2,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
-  name = "tfe-vpc"
+  name = var.vpc_name
   cidr = "10.0.0.0/16"
 
   azs             = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
@@ -34,7 +34,7 @@ resource "aws_vpc_endpoint" "s3" {
   service_name = "com.amazonaws.ca-central-1.s3"
 
   tags = {
-    Name = "tfe-vpce-s3"
+    Name = var.s3_vpc_endpoint_name
   }
 }
 
@@ -50,18 +50,18 @@ resource "aws_vpc_endpoint_route_table_association" "private" {
 
 # Bastion Security Group
 
-resource "aws_security_group" "tfe_bastion" {
-  name        = "tfe-bastion-sg"
+resource "aws_security_group" "bastion" {
+  name        = var.bastion_security_group_name
   description = "Bastion Host Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "tfe-bastion-sg"
+    Name = var.bastion_security_group_name
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_bastion_ssh" {
-  security_group_id = aws_security_group.tfe_bastion.id
+resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
+  security_group_id = aws_security_group.bastion.id
 
   cidr_ipv4   = "${local.my_ip}/32"
   ip_protocol = "tcp"
@@ -69,27 +69,27 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_bastion_ssh" {
   to_port     = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "tfe_bastion" {
-  security_group_id = aws_security_group.tfe_bastion.id
+resource "aws_vpc_security_group_egress_rule" "bastion" {
+  security_group_id = aws_security_group.bastion.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
 
-# EC2 Security Groups
+# TFE Instances Security Groups
 
-resource "aws_security_group" "tfe_ec2" {
-  name        = "tfe-ec2-sg"
+resource "aws_security_group" "tfe" {
+  name        = var.tfe_security_group_name
   description = "TFE Hosts Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "tfe-ec2-sg"
+    Name = var.tfe_security_group_name
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_https" {
-  security_group_id = aws_security_group.tfe_ec2.id
+resource "aws_vpc_security_group_ingress_rule" "tfe_https" {
+  security_group_id = aws_security_group.tfe.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
@@ -97,8 +97,8 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_https" {
   to_port     = 443
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_ssh" {
-  security_group_id = aws_security_group.tfe_ec2.id
+resource "aws_vpc_security_group_ingress_rule" "tfe_ssh" {
+  security_group_id = aws_security_group.tfe.id
 
   cidr_ipv4   = "10.0.0.0/16"
   ip_protocol = "tcp"
@@ -106,8 +106,8 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ec2_ssh" {
   to_port     = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "tfe_ec2" {
-  security_group_id = aws_security_group.tfe_ec2.id
+resource "aws_vpc_security_group_egress_rule" "tfe" {
+  security_group_id = aws_security_group.tfe.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
@@ -115,18 +115,18 @@ resource "aws_vpc_security_group_egress_rule" "tfe_ec2" {
 
 # Application Load Balancer Security Group
 
-resource "aws_security_group" "tfe_alb" {
-  name        = "tfe-alb-sg"
+resource "aws_security_group" "alb" {
+  name        = var.alb_security_group_name
   description = "Application Load Balancer Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "tfe-alb-sg"
+    Name = var.alb_security_group_name
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "tfe_alb" {
-  security_group_id = aws_security_group.tfe_alb.id
+resource "aws_vpc_security_group_ingress_rule" "alb" {
+  security_group_id = aws_security_group.alb.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
@@ -134,8 +134,8 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_alb" {
   to_port     = 443
 }
 
-resource "aws_vpc_security_group_egress_rule" "tfe_alb" {
-  security_group_id = aws_security_group.tfe_alb.id
+resource "aws_vpc_security_group_egress_rule" "alb" {
+  security_group_id = aws_security_group.alb.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"

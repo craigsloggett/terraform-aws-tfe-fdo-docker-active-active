@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "tfe" {
-  domain_name       = "tfe.craig-sloggett.sbx.hashidemos.io"
+  domain_name       = aws_route53_record.alias_record.name
   validation_method = "DNS"
 
   lifecycle {

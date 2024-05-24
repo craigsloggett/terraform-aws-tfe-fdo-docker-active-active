@@ -19,7 +19,7 @@ curl -fsSL "${docker_gpg_url}" | gpg --dearmor -o "${apt_keyring_dir}/docker.gpg
 
 chmod a+r "${apt_keyring_dir}"/docker.gpg
 
-cat << 'EOF' > /etc/apt/sources.list.d/docker.sources
+cat <<'EOF' >/etc/apt/sources.list.d/docker.sources
 Types: deb
 URIs: https://download.docker.com/linux/debian
 Suites: bookworm
@@ -31,7 +31,7 @@ EOF
 # Enable ipv4 forwarding, requires on CIS hardened machines.
 sysctl net.ipv4.conf.all.forwarding=1
 
-cat << 'EOF' > /etc/sysctl.d/enabled_ipv4_forwarding.conf
+cat <<'EOF' >/etc/sysctl.d/enabled_ipv4_forwarding.conf
 net.ipv4.conf.all.forwarding=1
 EOF
 
@@ -47,24 +47,24 @@ usermod -aG docker "${USERNAME}"
 tfe_hostname="tfe.craig-sloggett.sbx.hashidemos.io"
 
 hashicorp_license="$(aws secretsmanager get-secret-value \
-	--secret-id tfe/license \
-	--query SecretString \
-	--output text)"
+  --secret-id tfe/license \
+  --query SecretString \
+  --output text)"
 
 encryption_password="$(aws secretsmanager get-secret-value \
-	--secret-id tfe/encryption_password \
-	--query SecretString \
-	--output text)"
+  --secret-id tfe/encryption_password \
+  --query SecretString \
+  --output text)"
 
 mkdir -p /etc/ssl/private/terraform-enterprise
 
 openssl req -x509 \
-	-nodes \
-	-newkey rsa:4096 \
-	-keyout /etc/ssl/private/terraform-enterprise/key.pem \
-	-out /etc/ssl/private/terraform-enterprise/cert.pem \
-	-sha256 -days 365 \
-	-subj "/C=CA/O=HashiCorp/CN=${tfe_hostname}"
+  -nodes \
+  -newkey rsa:4096 \
+  -keyout /etc/ssl/private/terraform-enterprise/key.pem \
+  -out /etc/ssl/private/terraform-enterprise/cert.pem \
+  -sha256 -days 365 \
+  -subj "/C=CA/O=HashiCorp/CN=${tfe_hostname}"
 
 cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
 
@@ -74,7 +74,7 @@ mkdir -p /var/lib/terraform-enterprise
 
 mkdir -p /run/terraform-enterprise
 
-cat << EOF > /run/terraform-enterprise/docker-compose.yml
+cat <<EOF >/run/terraform-enterprise/docker-compose.yml
 ---
 name: terraform-enterprise
 services:
@@ -118,11 +118,11 @@ volumes:
 EOF
 
 echo "${hashicorp_license}" |
-	docker login --username terraform images.releases.hashicorp.com --password-stdin
+  docker login --username terraform images.releases.hashicorp.com --password-stdin
 
 docker pull images.releases.hashicorp.com/hashicorp/terraform-enterprise:v202311-1
 
-cat << 'EOF' > /etc/systemd/system/terraform-enterprise.service
+cat <<'EOF' >/etc/systemd/system/terraform-enterprise.service
 [Unit]
 Description=Terraform Enterprise Service
 Requires=docker.service
