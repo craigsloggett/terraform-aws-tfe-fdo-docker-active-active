@@ -35,7 +35,7 @@ data "aws_ami" "debian" {
   }
 }
 
-data "aws_secretsmanager_secret" "tfe_license" {
+data "aws_secretsmanager_secret" "tfe-license" {
   name = "tfe/license"
 }
 
