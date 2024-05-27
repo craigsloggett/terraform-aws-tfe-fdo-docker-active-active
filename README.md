@@ -31,9 +31,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_acm_certificate_validation.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/acm_certificate_validation) | resource |
 | [aws_autoscaling_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/autoscaling_group) | resource |
 | [aws_iam_instance_profile.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_instance_profile) | resource |
-| [aws_iam_policy.tfe_secrets](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_policy) | resource |
 | [aws_iam_role.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy_attachment.tfe_secrets](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_instance.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/instance) | resource |
 | [aws_key_pair.self](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/key_pair) | resource |
 | [aws_launch_template.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/launch_template) | resource |
@@ -62,7 +60,6 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_ami.debian](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.tfe_secrets](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/region) | data source |
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/route53_zone) | data source |
 | [aws_secretsmanager_secret.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret) | data source |
@@ -83,7 +80,7 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_lb_target_group_name"></a> [lb\_target\_group\_name](#input\_lb\_target\_group\_name) | Load Balancer Target Group | `string` | `"tfe-web-alb-tg"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | Route53 Zone | `string` | `"craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | S3 VPC Endpoint | `string` | `"tfe-vpce-s3"` | no |
-| <a name="input_tfe_hostname"></a> [tfe\_hostname](#input\_tfe\_hostname) | The hostname of Terraform Enterprise instance. | `string` | `"tfe.craig-sloggett.sbx.hashidemos.io"` | no |
+| <a name="input_tfe_hostname"></a> [tfe\_hostname](#input\_tfe\_hostname) | The hostname of Terraform Enterprise instance. | `string` | `"tfe"` | no |
 | <a name="input_tfe_security_group_name"></a> [tfe\_security\_group\_name](#input\_tfe\_security\_group\_name) | Security Group | `string` | `"tfe-sg"` | no |
 | <a name="input_tfe_version"></a> [tfe\_version](#input\_tfe\_version) | The version of Terraform Enterprise to deploy. | `string` | `"v202401-2"` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | VPC | `string` | `"tfe-vpc"` | no |
