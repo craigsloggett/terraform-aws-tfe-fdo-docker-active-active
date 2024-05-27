@@ -28,12 +28,6 @@ variable "alb_security_group_name" {
   default     = "alb-sg"
 }
 
-variable "route53_alias_record_name" {
-  type        = string
-  description = "Route53 Record"
-  default     = "tfe.craig-sloggett.sbx.hashidemos.io"
-}
-
 variable "route53_zone_name" {
   type        = string
   description = "Route53 Zone"
@@ -62,4 +56,16 @@ variable "lb_target_group_name" {
   type        = string
   description = "Load Balancer Target Group"
   default     = "tfe-web-alb-tg"
+}
+
+variable "tfe_version" {
+  type        = string
+  description = "The version of Terraform Enterprise to deploy."
+  default     = "v202401-2"
+}
+
+variable "tfe_hostname" {
+  type        = string
+  description = "The hostname of Terraform Enterprise instance."
+  default     = "tfe"
 }

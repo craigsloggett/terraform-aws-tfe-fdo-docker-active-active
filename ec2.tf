@@ -43,8 +43,16 @@ resource "aws_launch_template" "tfe" {
   image_id               = data.aws_ami.debian.id
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.self.key_name
-  user_data              = base64encode(file("scripts/tfe-user-data.sh"))
   update_default_version = true
+  user_data = base64encode(templatefile(
+    "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
+    {
+      tfe_version         = var.tfe_version
+      tfe_fqdn            = local.route53_alias_record_name
+      tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
+      encryption_password = data.aws_secretsmanager_secret_version.encryption_password.secret_string
+    }
+  ))
 
   monitoring {
     enabled = true
