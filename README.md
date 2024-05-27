@@ -67,6 +67,8 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/route53_zone) | data source |
 | [aws_secretsmanager_secret.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret) | data source |
 | [aws_secretsmanager_secret.tfe_license](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret) | data source |
+| [aws_secretsmanager_secret_version.encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret_version) | data source |
+| [aws_secretsmanager_secret_version.tfe_license](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret_version) | data source |
 | [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/3.4.2/docs/data-sources/http) | data source |
 
 ## Inputs
@@ -79,10 +81,11 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | EC2 Instance Profile | `string` | `"tfe-instance-profile"` | no |
 | <a name="input_lb_name"></a> [lb\_name](#input\_lb\_name) | Load Balancer | `string` | `"tfe-web-alb"` | no |
 | <a name="input_lb_target_group_name"></a> [lb\_target\_group\_name](#input\_lb\_target\_group\_name) | Load Balancer Target Group | `string` | `"tfe-web-alb-tg"` | no |
-| <a name="input_route53_alias_record_name"></a> [route53\_alias\_record\_name](#input\_route53\_alias\_record\_name) | Route53 Record | `string` | `"tfe.craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | Route53 Zone | `string` | `"craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | S3 VPC Endpoint | `string` | `"tfe-vpce-s3"` | no |
+| <a name="input_tfe_hostname"></a> [tfe\_hostname](#input\_tfe\_hostname) | The hostname of Terraform Enterprise instance. | `string` | `"tfe.craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_tfe_security_group_name"></a> [tfe\_security\_group\_name](#input\_tfe\_security\_group\_name) | Security Group | `string` | `"tfe-sg"` | no |
+| <a name="input_tfe_version"></a> [tfe\_version](#input\_tfe\_version) | The version of Terraform Enterprise to deploy. | `string` | `"v202401-2"` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | VPC | `string` | `"tfe-vpc"` | no |
 
 ## Outputs
