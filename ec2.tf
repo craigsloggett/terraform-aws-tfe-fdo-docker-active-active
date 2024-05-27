@@ -38,14 +38,6 @@ resource "aws_instance" "bastion" {
 
 # TFE Hosts
 
-data "aws_secretsmanager_secret_version" "tfe_license" {
-  secret_id = "tfe/license"
-}
-
-data "aws_secretsmanager_secret_version" "encryption_password" {
-  secret_id = "tfe/encryption_password"
-}
-
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id

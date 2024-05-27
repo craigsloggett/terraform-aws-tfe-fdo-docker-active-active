@@ -62,8 +62,6 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/region) | data source |
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/route53_zone) | data source |
-| [aws_secretsmanager_secret.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret) | data source |
-| [aws_secretsmanager_secret.tfe_license](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret) | data source |
 | [aws_secretsmanager_secret_version.encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret_version) | data source |
 | [aws_secretsmanager_secret_version.tfe_license](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/secretsmanager_secret_version) | data source |
 | [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/3.4.2/docs/data-sources/http) | data source |
