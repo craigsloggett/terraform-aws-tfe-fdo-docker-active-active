@@ -28,12 +28,6 @@ variable "alb_security_group_name" {
   default     = "alb-sg"
 }
 
-variable "route53_alias_record_name" {
-  type        = string
-  description = "Route53 Record"
-  default     = "tfe.craig-sloggett.sbx.hashidemos.io"
-}
-
 variable "route53_zone_name" {
   type        = string
   description = "Route53 Zone"
