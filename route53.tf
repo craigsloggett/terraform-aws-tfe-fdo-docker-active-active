@@ -1,7 +1,3 @@
-locals {
-  route53_alias_record_name = "${var.tfe_hostname}.${var.route53_zone_name}"
-}
-
 resource "aws_route53_record" "cert_validation_record" {
   name    = element(aws_acm_certificate.tfe.domain_validation_options[*].resource_record_name, 0)
   type    = element(aws_acm_certificate.tfe.domain_validation_options[*].resource_record_type, 0)
