@@ -63,3 +63,15 @@ variable "lb_target_group_name" {
   description = "Load Balancer Target Group"
   default     = "tfe-web-alb-tg"
 }
+
+variable "tfe_version" {
+  type        = string
+  description = "The version of Terraform Enterprise to deploy."
+  default     = "v202401-2"
+}
+
+variable "tfe_hostname" {
+  type        = string
+  description = "The hostname of Terraform Enterprise instance."
+  default     = "tfe.craig-sloggett.sbx.hashidemos.io"
+}
