@@ -67,5 +67,5 @@ variable "tfe_version" {
 variable "tfe_hostname" {
   type        = string
   description = "The hostname of Terraform Enterprise instance."
-  default     = "tfe.craig-sloggett.sbx.hashidemos.io"
+  default     = "tfe"
 }

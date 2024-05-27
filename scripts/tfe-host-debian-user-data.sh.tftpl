@@ -53,7 +53,7 @@ openssl req -x509 \
   -keyout /etc/ssl/private/terraform-enterprise/key.pem \
   -out /etc/ssl/private/terraform-enterprise/cert.pem \
   -sha256 -days 365 \
-  -subj "/C=CA/O=HashiCorp/CN=${tfe_hostname}"
+  -subj "/C=CA/O=HashiCorp/CN=${tfe_fqdn}"
 
 cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
 
@@ -71,7 +71,7 @@ services:
     image: "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}"
     environment:
       TFE_LICENSE: "${tfe_license}"
-      TFE_HOSTNAME: "${tfe_hostname}"
+      TFE_HOSTNAME: "${tfe_fqdn}"
       TFE_ENCRYPTION_PASSWORD: "${encryption_password}"
       TFE_OPERATIONAL_MODE: "disk"
       TFE_DISK_CACHE_VOLUME_NAME: "terraform-enterprise-cache"

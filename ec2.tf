@@ -46,6 +46,10 @@ data "aws_secretsmanager_secret_version" "encryption_password" {
   secret_id = "tfe/encryption_password"
 }
 
+locals {
+  tfe_fqdn = "${var.tfe_hostname}.${var.route53_zone_name}"
+}
+
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id
@@ -56,7 +60,7 @@ resource "aws_launch_template" "tfe" {
     "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
     {
       tfe_version         = var.tfe_version
-      tfe_hostname        = var.tfe_hostname
+      tfe_fqdn            = local.tfe_fqdn
       tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
       encryption_password = data.aws_secretsmanager_secret_version.encryption_password.secret_string
     }
