@@ -13,6 +13,35 @@ DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https ca-certificates curl gnupg
 
+# PostgreSQL
+
+# Setup Postgres' apt repository.
+curl -fsSL "https://www.postgresql.org/media/keys/ACCC4CF8.asc" | gpg --dearmor -o "/usr/share/keyrings/postgresql.gpg"
+
+chmod a+r /usr/share/keyrings/postgresql.gpg
+
+cat <<'EOF' >/etc/apt/sources.list.d/postgresql.sources
+Types: deb
+URIs: https://apt.postgresql.org/pub/repos/apt
+Suites: bookworm-pgdg
+Components: main
+arch: amd64
+signed-by: /usr/share/keyrings/postgresql.gpg
+EOF
+
+# Install the PostgreSQL CLI tool.
+DEBIAN_FRONTEND=noninteractive apt-get -yq update
+DEBIAN_FRONTEND=noninteractive apt-get -yq install "postgresql-client-${postgresql_version}"
+
+PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+  "CREATE USER tfe_user WITH PASSWORD '${db_master_password}';"
+
+PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+  "GRANT ALL PRVILEGES ON ${db_name} TO tfe_user;"
+
+PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+  "ALTER DATABASE ${db_name} OWNER TO tfe_user;"
+
 # Docker
 
 # Setup Docker's apt repository.

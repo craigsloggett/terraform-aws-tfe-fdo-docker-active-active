@@ -38,6 +38,34 @@ resource "aws_instance" "bastion" {
 
 # TFE Hosts
 
+resource "random_string" "encryption_password" {
+  length = 32
+}
+
+resource "random_string" "db_password" {
+  length = 32
+}
+
+resource "aws_secretsmanager_secret" "encryption_password" {
+  name        = "tfe/encryption_password"
+  description = "Terraform Enterprise EC2 Encryption Password"
+}
+
+resource "aws_secretsmanager_secret" "db_password" {
+  name        = "tfe/db_password"
+  description = "Terraform Enterprise RDS User Password"
+}
+
+resource "aws_secretsmanager_secret_version" "encryption_password" {
+  secret_id     = aws_secretsmanager_secret.encryption_password.id
+  secret_string = random_string.encryption_password.result
+}
+
+resource "aws_secretsmanager_secret_version" "db_password" {
+  secret_id     = aws_secretsmanager_secret.db_password.id
+  secret_string = random_string.db_password.result
+}
+
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id
@@ -48,9 +76,16 @@ resource "aws_launch_template" "tfe" {
     "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
     {
       tfe_version         = var.tfe_version
+      postgresql_version  = split(".", var.postgresql_version)[0] # The install script only needs the major version number.
       tfe_fqdn            = local.route53_alias_record_name
       tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
-      encryption_password = data.aws_secretsmanager_secret_version.encryption_password.secret_string
+      encryption_password = aws_secretsmanager_secret_version.encryption_password.secret_string
+      db_name             = aws_db_instance.tfe.db_name
+      db_master_username  = aws_db_instance.tfe.username
+      db_master_password  = data.aws_secretsmanager_secret_version.master_user_secret.secret_string
+      db_username         = var.rds_instance_username
+      db_password         = aws_secretsmanager_secret_version.db_password.secret_string
+      rds_fqdn            = aws_db_instance.tfe.address
     }
   ))
 
