@@ -33,14 +33,24 @@ EOF
 DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq install "postgresql-client-${postgresql_version}"
 
-PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "CREATE USER tfe_user WITH PASSWORD '${db_master_password}';"
+cat <<'EOF' >"$(/tmp/check_user_existence.sh)"
+#!/usr/bin/env bash
 
-PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "GRANT ALL PRVILEGES ON ${db_name} TO tfe_user;"
+set -euo pipefail
+PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -tAc \
+  "SELECT 1 FROM pg_roles WHERE rolname='${db_username}'"
+EOF
 
-PG_PASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "ALTER DATABASE ${db_name} OWNER TO tfe_user;"
+if [ "$(/tmp/./check_user_existence.sh)" != "1" ]; then
+  PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+    "CREATE USER ${db_username} WITH PASSWORD '${db_master_password}';"
+
+  PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+    "GRANT ALL PRVILEGES ON ${db_name} TO ${db_username};"
+
+  PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
+    "ALTER DATABASE ${db_name} OWNER TO ${db_username};"
+fi
 
 # Docker
 
