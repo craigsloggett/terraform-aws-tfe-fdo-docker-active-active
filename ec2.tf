@@ -75,17 +75,17 @@ resource "aws_launch_template" "tfe" {
   user_data = base64encode(templatefile(
     "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
     {
-      tfe_version         = var.tfe_version
-      postgresql_version  = split(".", var.postgresql_version)[0] # The install script only needs the major version number.
-      tfe_fqdn            = local.route53_alias_record_name
       tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
+      tfe_version         = var.tfe_version
+      tfe_fqdn            = local.route53_alias_record_name
       encryption_password = aws_secretsmanager_secret_version.encryption_password.secret_string
-      db_name             = aws_db_instance.tfe.db_name
+      postgresql_version  = split(".", var.postgresql_version)[0] # The install script only needs the major version number.
+      rds_fqdn            = aws_db_instance.tfe.address
       db_master_username  = aws_db_instance.tfe.username
-      db_master_password  = data.aws_secretsmanager_secret_version.master_user_secret.secret_string
+      db_master_password  = jsondecode(data.aws_secretsmanager_secret_version.master_user_secret.secret_string).password
+      db_name             = aws_db_instance.tfe.db_name
       db_username         = var.rds_instance_username
       db_password         = aws_secretsmanager_secret_version.db_password.secret_string
-      rds_fqdn            = aws_db_instance.tfe.address
     }
   ))
 
