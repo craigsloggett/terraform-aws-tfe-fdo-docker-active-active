@@ -47,13 +47,15 @@ resource "random_string" "db_password" {
 }
 
 resource "aws_secretsmanager_secret" "encryption_password" {
-  name        = "tfe/encryption_password"
-  description = "Terraform Enterprise EC2 Encryption Password"
+  name                    = "tfe/encryption_password"
+  description             = "Terraform Enterprise EC2 Encryption Password"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
-  name        = "tfe/db_password"
-  description = "Terraform Enterprise RDS User Password"
+  name                    = "tfe/db_password"
+  description             = "Terraform Enterprise RDS User Password"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "encryption_password" {
