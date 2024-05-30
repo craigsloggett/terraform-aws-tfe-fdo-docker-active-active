@@ -15,7 +15,7 @@ resource "aws_instance" "bastion" {
   monitoring                  = true
 
   key_name                    = aws_key_pair.self.key_name
-  user_data                   = file("cloud-init/bastion")
+  user_data                   = file("${path.module}/cloud-init/bastion")
   user_data_replace_on_change = true
   iam_instance_profile        = aws_iam_instance_profile.tfe.name
 
@@ -38,58 +38,13 @@ resource "aws_instance" "bastion" {
 
 # TFE Hosts
 
-resource "random_string" "encryption_password" {
-  length = 32
-}
-
-resource "random_string" "db_password" {
-  length = 32
-}
-
-resource "aws_secretsmanager_secret" "encryption_password" {
-  name                    = "tfe/encryption_password"
-  description             = "Terraform Enterprise EC2 Encryption Password"
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret" "db_password" {
-  name                    = "tfe/db_password"
-  description             = "Terraform Enterprise RDS User Password"
-  recovery_window_in_days = 0
-}
-
-resource "aws_secretsmanager_secret_version" "encryption_password" {
-  secret_id     = aws_secretsmanager_secret.encryption_password.id
-  secret_string = random_string.encryption_password.result
-}
-
-resource "aws_secretsmanager_secret_version" "db_password" {
-  secret_id     = aws_secretsmanager_secret.db_password.id
-  secret_string = random_string.db_password.result
-}
-
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.self.key_name
   update_default_version = true
-  user_data = base64encode(templatefile(
-    "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
-    {
-      tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
-      tfe_version         = var.tfe_version
-      tfe_fqdn            = local.route53_alias_record_name
-      encryption_password = aws_secretsmanager_secret_version.encryption_password.secret_string
-      postgresql_version  = split(".", var.postgresql_version)[0] # The install script only needs the major version number.
-      rds_fqdn            = aws_db_instance.tfe.address
-      db_master_username  = aws_db_instance.tfe.username
-      db_master_password  = jsondecode(data.aws_secretsmanager_secret_version.master_user_secret.secret_string).password
-      db_name             = aws_db_instance.tfe.db_name
-      db_username         = var.rds_instance_username
-      db_password         = aws_secretsmanager_secret_version.db_password.secret_string
-    }
-  ))
+  user_data              = base64encode(file("${path.module}/scripts/tfe-host-debian-user-data.sh"))
 
   monitoring {
     enabled = true

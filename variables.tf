@@ -1,3 +1,8 @@
+variable "tfe_license" {
+  type        = string
+  description = "The license for Terraform Enterprise."
+}
+
 variable "tfe_version" {
   type        = string
   description = "The version of Terraform Enterprise to deploy."
@@ -7,13 +12,25 @@ variable "tfe_version" {
 variable "postgresql_version" {
   type        = string
   description = "The version of the PostgreSQL engine to deploy."
-  default     = "16.3"
+  default     = "15.7"
 }
 
 variable "tfe_hostname" {
   type        = string
   description = "The hostname of Terraform Enterprise instance."
   default     = "tfe"
+}
+
+variable "tfe_db_name" {
+  type        = string
+  description = "The name of the database used to store TFE data in."
+  default     = "tfe"
+}
+
+variable "tfe_db_username" {
+  type        = string
+  description = "The username used to access the TFE database."
+  default     = "tfe_user"
 }
 
 variable "vpc_name" {
@@ -88,22 +105,10 @@ variable "rds_instance_name" {
   default     = "tfe-postgres-db"
 }
 
-variable "rds_instance_db_name" {
-  type        = string
-  description = "The name of the database to create to store TFE data in."
-  default     = "tfe"
-}
-
 variable "rds_instance_master_username" {
   type        = string
   description = "The username of the RDS master user."
   default     = "tfe"
-}
-
-variable "rds_instance_username" {
-  type        = string
-  description = "The username of the RDS TFE user."
-  default     = "tfe_user"
 }
 
 variable "rds_instance_class" {

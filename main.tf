@@ -35,16 +35,16 @@ data "aws_ami" "debian" {
   }
 }
 
-data "aws_secretsmanager_secret_version" "tfe_license" {
-  secret_id = "tfe/license"
-}
-
 data "aws_secretsmanager_secret_version" "master_user_secret" {
   secret_id = aws_db_instance.tfe.master_user_secret[0].secret_arn
 }
 
 data "aws_kms_key" "secretsmanager" {
   key_id = "alias/aws/secretsmanager"
+}
+
+data "aws_kms_key" "ssm" {
+  key_id = "alias/aws/ssm"
 }
 
 locals {

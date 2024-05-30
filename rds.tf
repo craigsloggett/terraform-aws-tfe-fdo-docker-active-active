@@ -12,7 +12,7 @@ resource "aws_db_instance" "tfe" {
   engine                        = "postgres"
   engine_version                = var.postgresql_version
   instance_class                = var.rds_instance_class
-  db_name                       = var.rds_instance_db_name
+  db_name                       = var.tfe_db_name
   username                      = var.rds_instance_master_username
   manage_master_user_password   = true
   master_user_secret_kms_key_id = data.aws_kms_key.secretsmanager.arn
