@@ -16,6 +16,29 @@ DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq upgrade
 DEBIAN_FRONTEND=noninteractive apt-get -yq install apt-transport-https ca-certificates curl gnupg jq
 
+# Convenience function to grab configuration from the SSM Parameter Store.
+grab_ssm_parameter() {
+  aws ssm get-parameter \
+    --name "${1}" \
+    --query "Parameter.Value" \
+    --with-decryption \
+    --output text
+}
+
+# Grab Configuration Parameters
+
+postgresql_major_version="$(grab_ssm_parameter "/TFE/PostgreSQL-Major-Version")"
+rds_fqdn="$(grab_ssm_parameter "/TFE/RDS-FQDN")"
+s3_region="$(grab_ssm_parameter "/TFE/S3-Region")"
+s3_bucket_id="$(grab_ssm_parameter "/TFE/S3-Bucket-ID")"
+tfe_db_name="$(grab_ssm_parameter "/TFE/DB-Name")"
+tfe_db_username="$(grab_ssm_parameter "/TFE/DB-Username")"
+tfe_db_password="$(grab_ssm_parameter "/TFE/DB-Password")"
+tfe_encryption_password="$(grab_ssm_parameter "/TFE/Encryption-Password")"
+tfe_fqdn="$(grab_ssm_parameter "/TFE/TFE-FQDN")"
+tfe_license="$(grab_ssm_parameter "/TFE/License")"
+tfe_version="$(grab_ssm_parameter "/TFE/Version")"
+
 # PostgreSQL
 
 # Setup Postgres' apt repository.
@@ -31,13 +54,6 @@ Components: main
 arch: amd64
 signed-by: /usr/share/keyrings/postgresql.gpg
 EOF
-
-postgresql_major_version="$(
-  aws ssm get-parameter \
-    --name "/TFE/PostgreSQL-Major-Version" \
-    --query "Parameter.Value" \
-    --output text
-)"
 
 # Setup the RDS Instance for Terraform Enterprise
 
@@ -63,35 +79,6 @@ rds_master_password="$(
     --secret-id "${rds_master_password_secret}" \
     --query SecretString --output text |
     jq -r '.password'
-)"
-
-rds_fqdn="$(
-  aws ssm get-parameter \
-    --name "/TFE/RDS-FQDN" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-tfe_db_name="$(
-  aws ssm get-parameter \
-    --name "/TFE/DB-Name" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-tfe_db_username="$(
-  aws ssm get-parameter \
-    --name "/TFE/DB-Username" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-tfe_db_password="$(
-  aws ssm get-parameter \
-    --name "/TFE/DB-Password" \
-    --with-decryption \
-    --query "Parameter.Value" \
-    --output text
 )"
 
 # Check the version of PostgreSQL
@@ -122,15 +109,14 @@ ALTER DATABASE ${tfe_db_name} OWNER TO ${tfe_db_username};
 EOF
 )"
 
-# Convenience script to execute SQL queries against the RDS instance.
+# Convenience function to execute SQL queries against the RDS instance.
 execute_sql() {
-  local sql_command="${1}"
   PGPASSWORD="${rds_master_password}" psql \
     -h "${rds_fqdn}" \
     -p 5432 \
     -U "${rds_master_username}" \
     -d "${tfe_db_name}" \
-    -c "${sql_command}" \
+    -c "${1}" \
     >/dev/null 2>&1
 }
 
@@ -177,13 +163,6 @@ usermod -aG docker "${USERNAME}"
 
 # TLS Certificate
 
-tfe_fqdn="$(
-  aws ssm get-parameter \
-    --name "/TFE/TFE-FQDN" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
 mkdir -p /etc/ssl/private/terraform-enterprise
 
 if [ ! -f "/etc/ssl/private/terraform-enterprise/cert.pem" ]; then
@@ -209,44 +188,6 @@ aws ec2 modify-instance-metadata-options \
   --http-tokens required \
   --http-endpoint enabled \
   --http-put-response-hop-limit 2
-
-# Grab all of the configuration parameters.
-tfe_license="$(
-  aws ssm get-parameter \
-    --name "/TFE/License" \
-    --with-decryption \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-tfe_version="$(
-  aws ssm get-parameter \
-    --name "/TFE/Version" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-tfe_encryption_password="$(
-  aws ssm get-parameter \
-    --name "/TFE/Encryption-Password" \
-    --with-decryption \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-s3_region="$(
-  aws ssm get-parameter \
-    --name "/TFE/S3-Region" \
-    --query "Parameter.Value" \
-    --output text
-)"
-
-s3_bucket_id="$(
-  aws ssm get-parameter \
-    --name "/TFE/S3-Bucket-ID" \
-    --query "Parameter.Value" \
-    --output text
-)"
 
 mkdir -p /var/lib/terraform-enterprise
 mkdir -p /run/terraform-enterprise
