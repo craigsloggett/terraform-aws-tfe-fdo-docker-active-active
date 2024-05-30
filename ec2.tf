@@ -82,6 +82,11 @@ resource "aws_launch_template" "tfe" {
       Name = "TFE Host"
     }
   }
+
+  # It is important that the RDS instance is up and running before we try to deploy the TFE Hosts.
+  depends_on = [
+    aws_db_instance.tfe
+  ]
 }
 
 resource "aws_autoscaling_group" "tfe" {
