@@ -33,14 +33,11 @@ EOF
 DEBIAN_FRONTEND=noninteractive apt-get -yq update
 DEBIAN_FRONTEND=noninteractive apt-get -yq install "postgresql-client-${postgresql_version}"
 
-PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "CREATE USER ${db_username} WITH PASSWORD '${db_password}';" >/dev/null 2>&1 || true
+PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c "CREATE USER ${db_username} WITH PASSWORD '${db_password}';" >/dev/null 2>&1 || true
 
-PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_username};" >/dev/null 2>&1 || true
+PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_username};" >/dev/null 2>&1 || true
 
-PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c \
-  "ALTER DATABASE ${db_name} OWNER TO ${db_username};" >/dev/null 2>&1 || true
+PGPASSWORD='${db_master_password}' psql -h "${rds_fqdn}" -p 5432 -U "${db_master_username}" -d "${db_name}" -c "ALTER DATABASE ${db_name} OWNER TO ${db_username};" >/dev/null 2>&1 || true
 
 # Docker
 
@@ -88,6 +85,12 @@ cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-ent
 
 # Terraform Enterprise
 
+# aws ec2 modify-instance-metadata-options \
+#   --instance-id "$(curl -H "X-aws-ec2-metadata-token: "$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")" -v http://169.254.169.254/latest/meta-data/instance-id)\
+#   --http-tokens required \
+#   --http-endpoint enabled \
+#   --http-put-response-hop-limit 2
+
 mkdir -p /var/lib/terraform-enterprise
 
 mkdir -p /run/terraform-enterprise
@@ -108,6 +111,16 @@ services:
       TFE_TLS_KEY_FILE: "/etc/ssl/private/terraform-enterprise/key.pem"
       TFE_TLS_CA_BUNDLE_FILE: "/etc/ssl/private/terraform-enterprise/bundle.pem"
       TFE_IACT_SUBNETS: "10.0.0.0/16"
+      # Database
+      #TFE_DATABASE_USER: "${db_username}"
+      #TFE_DATABASE_PASSWORD: "${db_password}"
+      #TFE_DATABASE_HOST: "${rds_fqdn}"
+      #TFE_DATABASE_NAME: "${db_name}"
+      ## Object Storage
+      #TFE_OBJECT_STORAGE_TYPE: "s3"
+      #TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE: "true"
+      #TFE_OBJECT_STORAGE_S3_REGION: "ca-central-1"
+      #TFE_OBJECT_STORAGE_S3_BUCKET: "703951826048-ca-central-1-terraform-enterprise"
     cap_add:
       - IPC_LOCK
     read_only: true
