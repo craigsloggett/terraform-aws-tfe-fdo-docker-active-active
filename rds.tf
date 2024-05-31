@@ -50,6 +50,7 @@ resource "aws_db_instance" "tfe" {
   monitoring_interval             = 5
   monitoring_role_arn             = aws_iam_role.tfe.arn
   parameter_group_name            = aws_db_parameter_group.tfe.name
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   apply_immediately               = true
 
   tags = {
