@@ -39,7 +39,7 @@ resource "aws_db_instance" "tfe" {
   manage_master_user_password     = true
   master_user_secret_kms_key_id   = data.aws_kms_key.secretsmanager.arn
   performance_insights_enabled    = true
-  performance_insights_kms_key_id = data.aws_kms_key.ebs.arn
+  performance_insights_kms_key_id = data.aws_kms_key.rds.arn
   backup_retention_period         = 4
   allocated_storage               = 20
   max_allocated_storage           = 100
@@ -47,8 +47,8 @@ resource "aws_db_instance" "tfe" {
   copy_tags_to_snapshot           = true
   auto_minor_version_upgrade      = true
   storage_encrypted               = true
-  enabled_cloudwatch_logs_exports = ["general", "error", "slowquery"]
   monitoring_interval             = 5
+  monitoring_role_arn             = aws_iam_role.tfe.arn
   parameter_group_name            = aws_db_parameter_group.tfe.name
   apply_immediately               = true
 

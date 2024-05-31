@@ -39,8 +39,8 @@ data "aws_secretsmanager_secret_version" "master_user_secret" {
   secret_id = aws_db_instance.tfe.master_user_secret[0].secret_arn
 }
 
-data "aws_kms_key" "ebs" {
-  key_id = "alias/aws/ebs"
+data "aws_kms_key" "rds" {
+  key_id = "alias/aws/rds"
 }
 
 data "aws_kms_key" "secretsmanager" {
