@@ -15,7 +15,7 @@ resource "aws_instance" "bastion" {
   monitoring                  = true
 
   key_name                    = aws_key_pair.self.key_name
-  user_data                   = file("cloud-init/bastion")
+  user_data                   = file("${path.module}/cloud-init/bastion")
   user_data_replace_on_change = true
   iam_instance_profile        = aws_iam_instance_profile.tfe.name
 
@@ -44,15 +44,7 @@ resource "aws_launch_template" "tfe" {
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.self.key_name
   update_default_version = true
-  user_data = base64encode(templatefile(
-    "${path.module}/scripts/tfe-host-debian-user-data.sh.tftpl",
-    {
-      tfe_version         = var.tfe_version
-      tfe_fqdn            = local.route53_alias_record_name
-      tfe_license         = data.aws_secretsmanager_secret_version.tfe_license.secret_string
-      encryption_password = data.aws_secretsmanager_secret_version.encryption_password.secret_string
-    }
-  ))
+  user_data              = base64encode(file("${path.module}/scripts/tfe-host-debian-user-data.sh"))
 
   monitoring {
     enabled = true
@@ -90,6 +82,11 @@ resource "aws_launch_template" "tfe" {
       Name = "TFE Host"
     }
   }
+
+  # It is important that the RDS instance is up and running before we try to deploy the TFE Hosts.
+  depends_on = [
+    aws_db_instance.tfe
+  ]
 }
 
 resource "aws_autoscaling_group" "tfe" {
@@ -107,4 +104,45 @@ resource "aws_autoscaling_group" "tfe" {
   }
 
   target_group_arns = [aws_lb_target_group.tfe.id]
+}
+
+# Application Load Balancer
+
+resource "aws_lb" "tfe" {
+  name                       = var.lb_name
+  load_balancer_type         = "application"
+  internal                   = false
+  subnets                    = module.vpc.public_subnets
+  security_groups            = [aws_security_group.alb.id]
+  drop_invalid_header_fields = true
+}
+
+resource "aws_lb_listener" "tfe" {
+  load_balancer_arn = aws_lb.tfe.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = aws_acm_certificate_validation.tfe.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tfe.arn
+  }
+}
+
+resource "aws_lb_target_group" "tfe" {
+  name     = var.lb_target_group_name
+  port     = 443
+  protocol = "HTTPS"
+  vpc_id   = module.vpc.vpc_id
+
+  health_check {
+    protocol            = "HTTPS"
+    path                = "/_health_check"
+    healthy_threshold   = 2
+    unhealthy_threshold = 10
+    timeout             = 120
+    interval            = 300
+    matcher             = 200
+  }
 }

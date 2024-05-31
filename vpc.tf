@@ -147,3 +147,33 @@ resource "aws_vpc_security_group_egress_rule" "alb" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
+
+# RDS Security Group
+
+resource "aws_security_group" "rds" {
+  name        = var.rds_security_group_name
+  description = "RDS Security Group"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = var.rds_security_group_name
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "rds" {
+  security_group_id = aws_security_group.rds.id
+  description       = "Allow DB traffic ingress to the RDS hosts from private subnets."
+
+  cidr_ipv4   = "10.0.0.0/16"
+  ip_protocol = "tcp"
+  from_port   = 5432
+  to_port     = 5432
+}
+
+resource "aws_vpc_security_group_egress_rule" "rds" {
+  security_group_id = aws_security_group.rds.id
+  description       = "Allow all outbound traffic from the RDS hosts."
+
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
+}
