@@ -33,6 +33,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_acm_certificate_validation.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/acm_certificate_validation) | resource |
 | [aws_autoscaling_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/autoscaling_group) | resource |
 | [aws_db_instance.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/db_instance) | resource |
+| [aws_db_parameter_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/db_parameter_group) | resource |
 | [aws_db_subnet_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/db_subnet_group) | resource |
 | [aws_iam_instance_profile.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_policy.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/resources/iam_policy) | resource |
@@ -92,6 +93,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_iam_policy_document.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_ssm](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
+| [aws_kms_key.ebs](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/region) | data source |
@@ -113,6 +115,7 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_rds_instance_class"></a> [rds\_instance\_class](#input\_rds\_instance\_class) | The instance type (size) of the RDS instance. | `string` | `"db.t3.medium"` | no |
 | <a name="input_rds_instance_master_username"></a> [rds\_instance\_master\_username](#input\_rds\_instance\_master\_username) | The username of the RDS master user. | `string` | `"tfe"` | no |
 | <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | The name of the RDS instance used to externalize TFE services. | `string` | `"tfe-postgres-db"` | no |
+| <a name="input_rds_parameter_group_name"></a> [rds\_parameter\_group\_name](#input\_rds\_parameter\_group\_name) | The name of the RDS Parameter Group. | `string` | `"rds-pg"` | no |
 | <a name="input_rds_security_group_name"></a> [rds\_security\_group\_name](#input\_rds\_security\_group\_name) | The name of the RDS Security Group. | `string` | `"rds-sg"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | The name of the Route53 Zone used to host TFE. | `string` | `"craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | The name of the S3 VPC Endpoint. | `string` | `"tfe-vpce-s3"` | no |
