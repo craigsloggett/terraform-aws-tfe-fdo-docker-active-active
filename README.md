@@ -93,7 +93,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_iam_policy_document.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_ssm](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/iam_policy_document) | data source |
-| [aws_kms_key.ebs](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
+| [aws_kms_key.rds](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/kms_key) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.51.1/docs/data-sources/region) | data source |
