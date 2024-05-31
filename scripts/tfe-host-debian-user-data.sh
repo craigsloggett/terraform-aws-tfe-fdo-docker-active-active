@@ -198,7 +198,7 @@ signed-by: /usr/share/keyrings/docker.gpg
 EOF
 
   # Enable ipv4 forwarding, required on CIS hardened machines.
-  sysctl net.ipv4.conf.all.forwarding=1
+  sysctl net.ipv4.conf.all.forwarding=1 >/dev/null 2>&1
   # Persist this configuration after reboot.
   cat <<'EOF' >/etc/sysctl.d/enabled_ipv4_forwarding.conf
 net.ipv4.conf.all.forwarding=1
@@ -223,7 +223,8 @@ EOF
       -keyout /etc/ssl/private/terraform-enterprise/key.pem \
       -out /etc/ssl/private/terraform-enterprise/cert.pem \
       -sha256 -days 365 \
-      -subj "/C=CA/O=HashiCorp/CN=${tfe_fqdn}"
+      -subj "/C=CA/O=HashiCorp/CN=${tfe_fqdn}" \
+      >/dev/null 2>&1
   fi
 
   cp /etc/ssl/private/terraform-enterprise/cert.pem /etc/ssl/private/terraform-enterprise/bundle.pem
