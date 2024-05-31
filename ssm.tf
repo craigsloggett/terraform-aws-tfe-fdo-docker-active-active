@@ -9,7 +9,8 @@ resource "aws_ssm_parameter" "tfe_license" {
 resource "aws_ssm_parameter" "tfe_version" {
   name        = "/TFE/Version"
   description = "Terraform Enterprise Version"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = var.tfe_version
 }
 
@@ -28,21 +29,24 @@ resource "aws_ssm_parameter" "tfe_encryption_password" {
 resource "aws_ssm_parameter" "tfe_fqdn" {
   name        = "/TFE/TFE-FQDN"
   description = "TFE Instance FQDN"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = local.route53_alias_record_name
 }
 
 resource "aws_ssm_parameter" "tfe_db_name" {
   name        = "/TFE/DB-Name"
   description = "Terraform Enterprise Database Name"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = var.tfe_db_name
 }
 
 resource "aws_ssm_parameter" "tfe_db_username" {
   name        = "/TFE/DB-Username"
   description = "Terraform Enterprise Database Username"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = var.tfe_db_username
 }
 
@@ -61,27 +65,31 @@ resource "aws_ssm_parameter" "tfe_db_password" {
 resource "aws_ssm_parameter" "postgresql_major_version" {
   name        = "/TFE/PostgreSQL-Major-Version"
   description = "PostgreSQL Major Version"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = split(".", var.postgresql_version)[0] # The install script only needs the major version number.
 }
 
 resource "aws_ssm_parameter" "rds_fqdn" {
   name        = "/TFE/RDS-FQDN"
   description = "RDS Instance FQDN"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = aws_db_instance.tfe.address
 }
 
 resource "aws_ssm_parameter" "s3_region" {
   name        = "/TFE/S3-Region"
   description = "S3 Region"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = data.aws_region.current.name
 }
 
 resource "aws_ssm_parameter" "s3_bucket_id" {
   name        = "/TFE/S3-Bucket-ID"
   description = "S3 Bucket ID"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
   value       = aws_s3_bucket.tfe.id
 }

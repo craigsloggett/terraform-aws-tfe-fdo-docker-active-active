@@ -63,12 +63,6 @@ variable "alb_security_group_name" {
   default     = "alb-sg"
 }
 
-variable "rds_security_group_name" {
-  type        = string
-  description = "The name of the RDS Security Group."
-  default     = "rds-sg"
-}
-
 variable "route53_zone_name" {
   type        = string
   description = "The name of the Route53 Zone used to host TFE."
@@ -115,4 +109,16 @@ variable "rds_instance_class" {
   type        = string
   description = "The instance type (size) of the RDS instance."
   default     = "db.t3.medium"
+}
+
+variable "rds_security_group_name" {
+  type        = string
+  description = "The name of the RDS Security Group."
+  default     = "rds-sg"
+}
+
+variable "rds_parameter_group_name" {
+  type        = string
+  description = "The name of the RDS Parameter Group."
+  default     = "rds-pg"
 }
