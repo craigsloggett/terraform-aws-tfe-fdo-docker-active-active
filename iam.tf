@@ -5,8 +5,7 @@ data "aws_iam_policy_document" "tfe_assume_role" {
     principals {
       type = "Service"
       identifiers = [
-        "ec2.amazonaws.com",
-        "monitoring.rds.amazonaws.com",
+        "ec2.amazonaws.com"
       ]
     }
   }
