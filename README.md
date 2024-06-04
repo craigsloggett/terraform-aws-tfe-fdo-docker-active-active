@@ -37,14 +37,16 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_db_subnet_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/db_subnet_group) | resource |
 | [aws_iam_instance_profile.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_policy.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.tfe_get_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.tfe_put_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.tfe_ssm](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_policy) | resource |
 | [aws_iam_role.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.tfe_get_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.tfe_put_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.tfe_ssm](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_instance.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/instance) | resource |
 | [aws_key_pair.self](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/key_pair) | resource |
 | [aws_launch_template.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/launch_template) | resource |
@@ -65,6 +67,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_ssm_parameter.rds_fqdn](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.s3_bucket_id](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.s3_region](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_admin_token_url](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_db_name](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_db_password](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_db_username](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/resources/ssm_parameter) | resource |
@@ -90,9 +93,10 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.tfe_get_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.tfe_put_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_s3](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_secrets_manager](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.tfe_ssm](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_kms_key.rds](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/kms_key) | data source |
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/5.52.0/docs/data-sources/kms_key) | data source |
