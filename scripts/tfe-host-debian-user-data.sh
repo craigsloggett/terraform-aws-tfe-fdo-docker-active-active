@@ -27,7 +27,7 @@ wait_for_network() {
   done
 }
 
-grab_ssm_parameter_value() {
+get_ssm_parameter_value() {
   log "  Grabbing AWS Systems Manager Parameter Value for: ${1}"
   aws ssm get-parameter \
     --name "${1}" \
@@ -44,7 +44,7 @@ find_secretsmanager_secret() {
     --output text
 }
 
-grab_secretsmanager_secret_value() {
+get_secretsmanager_secret_value() {
   log "  Grabbing AWS SecretsManager Secret value for: ${1}"
   aws secretsmanager get-secret-value \
     --secret-id "${1}" \
@@ -95,23 +95,23 @@ main() {
   log "Populating configuration variables."
 
   # FQDNs
-  rds_fqdn="$(grab_ssm_parameter_value "/TFE/RDS-FQDN")"
-  tfe_fqdn="$(grab_ssm_parameter_value "/TFE/TFE-FQDN")"
+  rds_fqdn="$(get_ssm_parameter_value "/TFE/RDS-FQDN")"
+  tfe_fqdn="$(get_ssm_parameter_value "/TFE/TFE-FQDN")"
 
   # S3 Configuration
-  s3_region="$(grab_ssm_parameter_value "/TFE/S3-Region")"
-  s3_bucket_id="$(grab_ssm_parameter_value "/TFE/S3-Bucket-ID")"
+  s3_region="$(get_ssm_parameter_value "/TFE/S3-Region")"
+  s3_bucket_id="$(get_ssm_parameter_value "/TFE/S3-Bucket-ID")"
 
   # TFE Database Configuration
-  tfe_db_name="$(grab_ssm_parameter_value "/TFE/DB-Name")"
-  tfe_db_username="$(grab_ssm_parameter_value "/TFE/DB-Username")"
-  tfe_db_password="$(grab_ssm_parameter_value "/TFE/DB-Password")"
-  postgresql_major_version="$(grab_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
+  tfe_db_name="$(get_ssm_parameter_value "/TFE/DB-Name")"
+  tfe_db_username="$(get_ssm_parameter_value "/TFE/DB-Username")"
+  tfe_db_password="$(get_ssm_parameter_value "/TFE/DB-Password")"
+  postgresql_major_version="$(get_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
 
   # TFE Application Configuration
-  tfe_license="$(grab_ssm_parameter_value "/TFE/License")"
-  tfe_version="$(grab_ssm_parameter_value "/TFE/Version")"
-  tfe_encryption_password="$(grab_ssm_parameter_value "/TFE/Encryption-Password")"
+  tfe_license="$(get_ssm_parameter_value "/TFE/License")"
+  tfe_version="$(get_ssm_parameter_value "/TFE/Version")"
+  tfe_encryption_password="$(get_ssm_parameter_value "/TFE/Encryption-Password")"
 
   # Wait for the network to be available.
   wait_for_network
@@ -146,12 +146,12 @@ EOF
   rds_master_password_secret="$(find_secretsmanager_secret "rds!")"
 
   rds_master_username="$(
-    grab_secretsmanager_secret_value "${rds_master_password_secret}" |
+    get_secretsmanager_secret_value "${rds_master_password_secret}" |
       jq -r '.username'
   )"
 
   rds_master_password="$(
-    grab_secretsmanager_secret_value "${rds_master_password_secret}" |
+    get_secretsmanager_secret_value "${rds_master_password_secret}" |
       jq -r '.password'
   )"
 
