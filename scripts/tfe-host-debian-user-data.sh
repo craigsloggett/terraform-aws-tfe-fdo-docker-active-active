@@ -36,6 +36,16 @@ get_ssm_parameter_value() {
     --output text
 }
 
+set_ssm_parameter_value() {
+  log "  Setting AWS Systems Manager Parameter Value for: ${1}"
+  aws ssm put-parameter \
+    --name "${1}" \
+    --value "${2}" \
+    --type "SecureString" \
+    --overwrite \
+    >/dev/null 2>&1
+}
+
 find_secretsmanager_secret() {
   log "  Looking up an AWS SecretsManager Secret."
   log "    Query: secret name starts with '${1}'"
@@ -75,6 +85,27 @@ set_ec2_http_put_response_hop_limit() {
     --http-endpoint enabled \
     --http-put-response-hop-limit "${1}" \
     >/dev/null 2>&1
+}
+
+wait_for_tfe_service() {
+  log "  Checking the status of the TFE service."
+  while ! docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl app status >/dev/null 2>&1; do
+    log "    Waiting for TFE to come online..."
+    sleep 1
+  done
+}
+
+wait_for_tfe_nodes() {
+  log "  Checking the status of the TFE nodes."
+  while docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl node list |
+    grep -q "No active nodes"; do
+    log "    Waiting for an active TFE node..."
+    sleep 1
+  done
+}
+
+get_tfe_admin_token_url() {
+  docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl admin token --url
 }
 
 main() {
@@ -329,6 +360,13 @@ EOF
 
   systemctl daemon-reload
   systemctl enable --now terraform-enterprise.service
+
+  # Wait for TFE to come online.
+  wait_for_tfe_service
+  wait_for_tfe_nodes
+
+  # Put the Admin Token URL in the Parameter Store for convenience.
+  set_ssm_parameter_value "/TFE/Admin-Token-URL" get_tfe_admin_token_url
 }
 
 main "$@"
