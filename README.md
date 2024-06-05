@@ -133,12 +133,5 @@ Infrastructure as Code Repository to Standup TFE
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_postgresql_version"></a> [postgresql\_version](#output\_postgresql\_version) | description |
-| <a name="output_rds_address"></a> [rds\_address](#output\_rds\_address) | description |
-| <a name="output_rds_endpoint"></a> [rds\_endpoint](#output\_rds\_endpoint) | description |
-| <a name="output_rds_master_user_secret_arn"></a> [rds\_master\_user\_secret\_arn](#output\_rds\_master\_user\_secret\_arn) | description |
-| <a name="output_rds_master_user_secret_value"></a> [rds\_master\_user\_secret\_value](#output\_rds\_master\_user\_secret\_value) | description |
-| <a name="output_rds_username"></a> [rds\_username](#output\_rds\_username) | description |
+No outputs.
 <!-- END_TF_DOCS -->
