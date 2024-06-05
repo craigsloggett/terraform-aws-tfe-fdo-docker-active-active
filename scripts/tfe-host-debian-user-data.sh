@@ -27,13 +27,23 @@ wait_for_network() {
   done
 }
 
-grab_ssm_parameter_value() {
+get_ssm_parameter_value() {
   log "  Grabbing AWS Systems Manager Parameter Value for: ${1}"
   aws ssm get-parameter \
     --name "${1}" \
     --query "Parameter.Value" \
     --with-decryption \
     --output text
+}
+
+set_ssm_parameter_value() {
+  log "  Setting AWS Systems Manager Parameter Value for: ${1}"
+  aws ssm put-parameter \
+    --name "${1}" \
+    --value "${2}" \
+    --type "SecureString" \
+    --overwrite \
+    >/dev/null 2>&1
 }
 
 find_secretsmanager_secret() {
@@ -44,7 +54,7 @@ find_secretsmanager_secret() {
     --output text
 }
 
-grab_secretsmanager_secret_value() {
+get_secretsmanager_secret_value() {
   log "  Grabbing AWS SecretsManager Secret value for: ${1}"
   aws secretsmanager get-secret-value \
     --secret-id "${1}" \
@@ -77,6 +87,27 @@ set_ec2_http_put_response_hop_limit() {
     >/dev/null 2>&1
 }
 
+wait_for_tfe_service() {
+  log "  Checking the status of the TFE service."
+  while ! docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl app status >/dev/null 2>&1; do
+    log "    Waiting for TFE to come online..."
+    sleep 1
+  done
+}
+
+wait_for_tfe_nodes() {
+  log "  Checking the status of the TFE nodes."
+  while docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl node list |
+    grep -q "No active nodes"; do
+    log "    Waiting for an active TFE node..."
+    sleep 1
+  done
+}
+
+get_tfe_admin_token_url() {
+  docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl admin token --url
+}
+
 main() {
   # Globally disable globbing and enable exit-on-error.
   set -ef
@@ -95,23 +126,23 @@ main() {
   log "Populating configuration variables."
 
   # FQDNs
-  rds_fqdn="$(grab_ssm_parameter_value "/TFE/RDS-FQDN")"
-  tfe_fqdn="$(grab_ssm_parameter_value "/TFE/TFE-FQDN")"
+  rds_fqdn="$(get_ssm_parameter_value "/TFE/RDS-FQDN")"
+  tfe_fqdn="$(get_ssm_parameter_value "/TFE/TFE-FQDN")"
 
   # S3 Configuration
-  s3_region="$(grab_ssm_parameter_value "/TFE/S3-Region")"
-  s3_bucket_id="$(grab_ssm_parameter_value "/TFE/S3-Bucket-ID")"
+  s3_region="$(get_ssm_parameter_value "/TFE/S3-Region")"
+  s3_bucket_id="$(get_ssm_parameter_value "/TFE/S3-Bucket-ID")"
 
   # TFE Database Configuration
-  tfe_db_name="$(grab_ssm_parameter_value "/TFE/DB-Name")"
-  tfe_db_username="$(grab_ssm_parameter_value "/TFE/DB-Username")"
-  tfe_db_password="$(grab_ssm_parameter_value "/TFE/DB-Password")"
-  postgresql_major_version="$(grab_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
+  tfe_db_name="$(get_ssm_parameter_value "/TFE/DB-Name")"
+  tfe_db_username="$(get_ssm_parameter_value "/TFE/DB-Username")"
+  tfe_db_password="$(get_ssm_parameter_value "/TFE/DB-Password")"
+  postgresql_major_version="$(get_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
 
   # TFE Application Configuration
-  tfe_license="$(grab_ssm_parameter_value "/TFE/License")"
-  tfe_version="$(grab_ssm_parameter_value "/TFE/Version")"
-  tfe_encryption_password="$(grab_ssm_parameter_value "/TFE/Encryption-Password")"
+  tfe_license="$(get_ssm_parameter_value "/TFE/License")"
+  tfe_version="$(get_ssm_parameter_value "/TFE/Version")"
+  tfe_encryption_password="$(get_ssm_parameter_value "/TFE/Encryption-Password")"
 
   # Wait for the network to be available.
   wait_for_network
@@ -146,12 +177,12 @@ EOF
   rds_master_password_secret="$(find_secretsmanager_secret "rds!")"
 
   rds_master_username="$(
-    grab_secretsmanager_secret_value "${rds_master_password_secret}" |
+    get_secretsmanager_secret_value "${rds_master_password_secret}" |
       jq -r '.username'
   )"
 
   rds_master_password="$(
-    grab_secretsmanager_secret_value "${rds_master_password_secret}" |
+    get_secretsmanager_secret_value "${rds_master_password_secret}" |
       jq -r '.password'
   )"
 
@@ -243,6 +274,27 @@ EOF
   mkdir -p /var/lib/terraform-enterprise
   mkdir -p /run/terraform-enterprise
 
+  # Create a .env file to correctly handle special characters in passwords.
+  cat <<EOF >/run/terraform-enterprise/.env
+TFE_LICENSE="${tfe_license}"
+TFE_HOSTNAME="${tfe_fqdn}"
+TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
+TFE_OPERATIONAL_MODE="external"
+TFE_DISK_CACHE_VOLUME_NAME="terraform-enterprise-cache"
+TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
+TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
+TFE_TLS_CA_BUNDLE_FILE="/etc/ssl/private/terraform-enterprise/bundle.pem"
+TFE_IACT_SUBNETS="10.0.0.0/16"
+TFE_DATABASE_HOST="${rds_fqdn}"
+TFE_DATABASE_NAME="${tfe_db_name}"
+TFE_DATABASE_USER="${tfe_db_username}"
+TFE_DATABASE_PASSWORD='${tfe_db_password}'
+TFE_OBJECT_STORAGE_TYPE="s3"
+TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
+TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
+TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
+EOF
+
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
 ---
 name: terraform-enterprise
@@ -250,25 +302,23 @@ services:
   tfe:
     image: "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}"
     environment:
-      TFE_LICENSE: "${tfe_license}"
-      TFE_HOSTNAME: "${tfe_fqdn}"
-      TFE_ENCRYPTION_PASSWORD: "${tfe_encryption_password}"
-      TFE_OPERATIONAL_MODE: "external"
-      TFE_DISK_CACHE_VOLUME_NAME: "terraform-enterprise-cache"
-      TFE_TLS_CERT_FILE: "/etc/ssl/private/terraform-enterprise/cert.pem"
-      TFE_TLS_KEY_FILE: "/etc/ssl/private/terraform-enterprise/key.pem"
-      TFE_TLS_CA_BUNDLE_FILE: "/etc/ssl/private/terraform-enterprise/bundle.pem"
-      TFE_IACT_SUBNETS: "10.0.0.0/16"
-      # Database
-      TFE_DATABASE_HOST: "${rds_fqdn}"
-      TFE_DATABASE_NAME: "${tfe_db_name}"
-      TFE_DATABASE_USER: "${tfe_db_username}"
-      TFE_DATABASE_PASSWORD: "${tfe_db_password}"
-      # Object Storage
-      TFE_OBJECT_STORAGE_TYPE: "s3"
-      TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE: "true"
-      TFE_OBJECT_STORAGE_S3_REGION: "${s3_region}"
-      TFE_OBJECT_STORAGE_S3_BUCKET: "${s3_bucket_id}"
+      - TFE_LICENSE
+      - TFE_HOSTNAME
+      - TFE_ENCRYPTION_PASSWORD
+      - TFE_OPERATIONAL_MODE
+      - TFE_DISK_CACHE_VOLUME_NAME
+      - TFE_TLS_CERT_FILE
+      - TFE_TLS_KEY_FILE
+      - TFE_TLS_CA_BUNDLE_FILE
+      - TFE_IACT_SUBNETS
+      - TFE_DATABASE_HOST
+      - TFE_DATABASE_NAME
+      - TFE_DATABASE_USER
+      - TFE_DATABASE_PASSWORD
+      - TFE_OBJECT_STORAGE_TYPE
+      - TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE
+      - TFE_OBJECT_STORAGE_S3_REGION
+      - TFE_OBJECT_STORAGE_S3_BUCKET
     cap_add:
       - IPC_LOCK
     read_only: true
@@ -329,6 +379,13 @@ EOF
 
   systemctl daemon-reload
   systemctl enable --now terraform-enterprise.service
+
+  # Wait for TFE to come online.
+  wait_for_tfe_service
+  wait_for_tfe_nodes
+
+  # Put the Admin Token URL in the Parameter Store for convenience.
+  set_ssm_parameter_value "/TFE/Admin-Token-URL" "$(get_tfe_admin_token_url)"
 }
 
 main "$@"

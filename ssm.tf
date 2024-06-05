@@ -93,3 +93,14 @@ resource "aws_ssm_parameter" "s3_bucket_id" {
   key_id      = data.aws_kms_key.ssm.id
   value       = aws_s3_bucket.tfe.id
 }
+
+# Creating the Admin Token in Terraform to make sure it gets deleted on a destroy.
+resource "aws_ssm_parameter" "tfe_admin_token_url" {
+  name        = "/TFE/Admin-Token-URL"
+  description = "Terraform Enterprise Admin Token URL"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = "PLACEHOLDER"
+
+  lifecycle { ignore_changes = [value] }
+}
