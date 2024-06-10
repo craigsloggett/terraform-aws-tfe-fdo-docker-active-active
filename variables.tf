@@ -122,3 +122,15 @@ variable "rds_parameter_group_name" {
   description = "The name of the RDS Parameter Group."
   default     = "rds-pg"
 }
+
+variable "elasticache_serverless_cache_name" {
+  type        = string
+  description = "The name of the serverless ElastiCache used as the TFE Redis cache."
+  default     = "tfe-redis-cache"
+}
+
+variable "elasticache_serverless_cache_security_group_name" {
+  type        = string
+  description = "The name of the serverless ElastiCache Security Group."
+  default     = "elasticache-sg"
+}
