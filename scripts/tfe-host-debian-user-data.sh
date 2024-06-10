@@ -297,7 +297,7 @@ TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
 TFE_REDIS_HOST="${elasticache_fqdn}:${elasticache_port}"
 TFE_REDIS_USER="default"
-TFE_REDIS_USER_TLS="true"
+TFE_REDIS_USE_TLS="true"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
@@ -324,6 +324,9 @@ services:
       - TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE
       - TFE_OBJECT_STORAGE_S3_REGION
       - TFE_OBJECT_STORAGE_S3_BUCKET
+      - TFE_REDIS_HOST
+      - TFE_REDIS_USER
+      - TFE_REDIS_USE_TLS
     cap_add:
       - IPC_LOCK
     read_only: true

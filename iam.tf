@@ -44,7 +44,9 @@ data "aws_iam_policy_document" "tfe_get_parameters" {
       aws_ssm_parameter.postgresql_major_version.arn,
       aws_ssm_parameter.rds_fqdn.arn,
       aws_ssm_parameter.s3_region.arn,
-      aws_ssm_parameter.s3_bucket_id.arn
+      aws_ssm_parameter.s3_bucket_id.arn,
+      aws_ssm_parameter.elasticache_fqdn.arn,
+      aws_ssm_parameter.elasticache_port.arn
     ]
   }
 }
