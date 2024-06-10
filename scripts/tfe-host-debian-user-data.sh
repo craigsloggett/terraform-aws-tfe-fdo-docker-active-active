@@ -279,7 +279,7 @@ EOF
 TFE_LICENSE="${tfe_license}"
 TFE_HOSTNAME="${tfe_fqdn}"
 TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
-TFE_OPERATIONAL_MODE="external"
+TFE_OPERATIONAL_MODE="active-active"
 TFE_DISK_CACHE_VOLUME_NAME="terraform-enterprise-cache"
 TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
 TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
@@ -293,6 +293,9 @@ TFE_OBJECT_STORAGE_TYPE="s3"
 TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
 TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
+TFE_REDIS_HOST="${redis_fqdn}:${redis_port}"
+TFE_REDIS_USER="default"
+TFE_REDIS_USER_TLS="true"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
