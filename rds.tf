@@ -21,6 +21,7 @@ resource "aws_db_parameter_group" "tfe" {
     value = "1"
   }
 
+  # The parameter group object is immutable, so it will be destroyed if changed.
   lifecycle {
     create_before_destroy = true
   }
@@ -54,4 +55,12 @@ resource "aws_db_instance" "tfe" {
   tags = {
     Name = var.rds_instance_name
   }
+
+  # Ensure log groups exist before RDS starts logging to them. This also ensures
+  # Terraform deletes the log groups after the RDS database so they aren't
+  # automatically created again by the RDS service during a Terraform destroy.
+  depends_on = [
+    aws_cloudwatch_log_group.tfe_rds_postgresql,
+    aws_cloudwatch_log_group.tfe_rds_upgrade
+  ]
 }
