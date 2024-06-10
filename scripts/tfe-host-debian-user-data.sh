@@ -128,6 +128,8 @@ main() {
   # FQDNs
   rds_fqdn="$(get_ssm_parameter_value "/TFE/RDS-FQDN")"
   tfe_fqdn="$(get_ssm_parameter_value "/TFE/TFE-FQDN")"
+  elasticache_fqdn="$(get_ssm_parameter_value "/TFE/ElastiCache-FQDN")"
+  elasticache_port="$(get_ssm_parameter_value "/TFE/ElastiCache-Port")"
 
   # S3 Configuration
   s3_region="$(get_ssm_parameter_value "/TFE/S3-Region")"
@@ -293,7 +295,7 @@ TFE_OBJECT_STORAGE_TYPE="s3"
 TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
 TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
-TFE_REDIS_HOST="${redis_fqdn}:${redis_port}"
+TFE_REDIS_HOST="${elasticache_fqdn}:${elasticache_port}"
 TFE_REDIS_USER="default"
 TFE_REDIS_USER_TLS="true"
 EOF

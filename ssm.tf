@@ -94,7 +94,7 @@ resource "aws_ssm_parameter" "s3_bucket_id" {
   value       = aws_s3_bucket.tfe.id
 }
 
-# Creating the Admin Token in Terraform to make sure it gets deleted on a destroy.
+# The Admin Token URL is populated by the Terraform Enterprise application on startup.
 resource "aws_ssm_parameter" "tfe_admin_token_url" {
   name        = "/TFE/Admin-Token-URL"
   description = "Terraform Enterprise Admin Token URL"
@@ -103,4 +103,20 @@ resource "aws_ssm_parameter" "tfe_admin_token_url" {
   value       = "PLACEHOLDER"
 
   lifecycle { ignore_changes = [value] }
+}
+
+resource "aws_ssm_parameter" "elasticache_fqdn" {
+  name        = "/TFE/ElastiCache-FQDN"
+  description = "ElastiCache FQDN"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = aws_elasticache_serverless_cache.tfe.endpoint[0].address
+}
+
+resource "aws_ssm_parameter" "elasticache_port" {
+  name        = "/TFE/ElastiCache-Port"
+  description = "ElastiCache Port"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = aws_elasticache_serverless_cache.tfe.endpoint[0].port
 }
