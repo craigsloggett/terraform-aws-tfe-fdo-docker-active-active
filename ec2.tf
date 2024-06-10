@@ -141,8 +141,8 @@ resource "aws_lb_target_group" "tfe" {
     path                = "/_health_check"
     healthy_threshold   = 2
     unhealthy_threshold = 10
-    timeout             = 120
-    interval            = 300
+    timeout             = 5
+    interval            = 45
     matcher             = 200
   }
 }
