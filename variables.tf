@@ -117,20 +117,32 @@ variable "rds_security_group_name" {
   default     = "rds-sg"
 }
 
+variable "rds_subnet_group_name" {
+  type        = string
+  description = "The name of the RDS Subnet Group."
+  default     = "rds-sg"
+}
+
 variable "rds_parameter_group_name" {
   type        = string
   description = "The name of the RDS Parameter Group."
   default     = "rds-pg"
 }
 
-variable "elasticache_serverless_cache_name" {
+variable "elasticache_name" {
   type        = string
-  description = "The name of the serverless ElastiCache used as the TFE Redis cache."
+  description = "The name of the cache used as the TFE Redis cache."
   default     = "tfe-redis-cache"
 }
 
-variable "elasticache_serverless_cache_security_group_name" {
+variable "elasticache_security_group_name" {
   type        = string
-  description = "The name of the serverless ElastiCache Security Group."
+  description = "The name of the ElastiCache Security Group."
+  default     = "elasticache-sg"
+}
+
+variable "elasticache_subnet_group_name" {
+  type        = string
+  description = "The name of the ElastiCache Subnet Group."
   default     = "elasticache-sg"
 }

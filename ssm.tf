@@ -110,13 +110,5 @@ resource "aws_ssm_parameter" "elasticache_fqdn" {
   description = "ElastiCache FQDN"
   type        = "SecureString"
   key_id      = data.aws_kms_key.ssm.id
-  value       = aws_elasticache_serverless_cache.tfe.endpoint[0].address
-}
-
-resource "aws_ssm_parameter" "elasticache_port" {
-  name        = "/TFE/ElastiCache-Port"
-  description = "ElastiCache Port"
-  type        = "SecureString"
-  key_id      = data.aws_kms_key.ssm.id
-  value       = aws_elasticache_serverless_cache.tfe.endpoint[0].port
+  value       = aws_elasticache_replication_group.tfe.primary_endpoint_address
 }

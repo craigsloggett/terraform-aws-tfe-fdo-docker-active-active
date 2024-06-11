@@ -181,18 +181,18 @@ resource "aws_vpc_security_group_egress_rule" "rds" {
 # ElastiCache Security Group
 
 resource "aws_security_group" "elasticache" {
-  name        = var.elasticache_serverless_cache_security_group_name
+  name        = var.elasticache_security_group_name
   description = "ElastiCache Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = var.elasticache_serverless_cache_security_group_name
+    Name = var.elasticache_security_group_name
   }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "elasticache" {
   security_group_id = aws_security_group.elasticache.id
-  description       = "Allow cache traffic ingress to the ElastiCache instance from private subnets."
+  description       = "Allow cache traffic to the ElastiCache instance from private subnets."
 
   cidr_ipv4   = "10.0.0.0/16"
   ip_protocol = "tcp"
