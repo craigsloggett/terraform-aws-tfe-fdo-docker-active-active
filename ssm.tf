@@ -112,3 +112,15 @@ resource "aws_ssm_parameter" "elasticache_fqdn" {
   key_id      = data.aws_kms_key.ssm.id
   value       = aws_elasticache_replication_group.tfe.primary_endpoint_address
 }
+
+resource "random_string" "tfe_redis_auth_token" {
+  length = 64
+}
+
+resource "aws_ssm_parameter" "redis_auth_token" {
+  name        = "/TFE/Redis-Auth-Token"
+  description = "Terraform Enterprise Redis Auth Token"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = random_string.tfe_redis_auth_token.result
+}

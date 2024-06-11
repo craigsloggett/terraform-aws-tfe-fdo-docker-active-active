@@ -140,6 +140,9 @@ main() {
   tfe_db_password="$(get_ssm_parameter_value "/TFE/DB-Password")"
   postgresql_major_version="$(get_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
 
+  # TFE Redis Configuration
+  tfe_redis_auth_token="$(get_ssm_parameter_value "/TFE/Redis-Auth-Token")"
+
   # TFE Application Configuration
   tfe_license="$(get_ssm_parameter_value "/TFE/License")"
   tfe_version="$(get_ssm_parameter_value "/TFE/Version")"
@@ -296,7 +299,9 @@ TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
 TFE_REDIS_HOST="${elasticache_fqdn}"
 TFE_REDIS_USER="default"
+TFE_REDIS_PASSWORD="${tfe_redis_auth_token}"
 TFE_REDIS_USE_TLS="true"
+TFE_REDIS_USE_AUTH="true"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
@@ -325,7 +330,9 @@ services:
       - TFE_OBJECT_STORAGE_S3_BUCKET
       - TFE_REDIS_HOST
       - TFE_REDIS_USER
+      - TFE_REDIS_PASSWORD
       - TFE_REDIS_USE_TLS
+      - TFE_REDIS_USE_AUTH
     cap_add:
       - IPC_LOCK
     read_only: true
