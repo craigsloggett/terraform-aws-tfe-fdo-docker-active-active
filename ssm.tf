@@ -15,7 +15,7 @@ resource "aws_ssm_parameter" "tfe_version" {
 }
 
 resource "random_string" "tfe_encryption_password" {
-  length = 32
+  length = 256
 }
 
 resource "aws_ssm_parameter" "tfe_encryption_password" {
@@ -51,7 +51,7 @@ resource "aws_ssm_parameter" "tfe_db_username" {
 }
 
 resource "random_string" "tfe_db_password" {
-  length = 32
+  length = 64
 }
 
 resource "aws_ssm_parameter" "tfe_db_password" {
@@ -94,7 +94,7 @@ resource "aws_ssm_parameter" "s3_bucket_id" {
   value       = aws_s3_bucket.tfe.id
 }
 
-# Creating the Admin Token in Terraform to make sure it gets deleted on a destroy.
+# The Admin Token URL is populated by the Terraform Enterprise application on startup.
 resource "aws_ssm_parameter" "tfe_admin_token_url" {
   name        = "/TFE/Admin-Token-URL"
   description = "Terraform Enterprise Admin Token URL"
@@ -103,4 +103,25 @@ resource "aws_ssm_parameter" "tfe_admin_token_url" {
   value       = "PLACEHOLDER"
 
   lifecycle { ignore_changes = [value] }
+}
+
+resource "aws_ssm_parameter" "elasticache_fqdn" {
+  name        = "/TFE/ElastiCache-FQDN"
+  description = "ElastiCache FQDN"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = aws_elasticache_replication_group.tfe.primary_endpoint_address
+}
+
+resource "random_string" "tfe_redis_auth_token" {
+  length  = 128
+  special = false
+}
+
+resource "aws_ssm_parameter" "redis_auth_token" {
+  name        = "/TFE/Redis-Auth-Token"
+  description = "Terraform Enterprise Redis Auth Token"
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = random_string.tfe_redis_auth_token.result
 }

@@ -128,6 +128,7 @@ main() {
   # FQDNs
   rds_fqdn="$(get_ssm_parameter_value "/TFE/RDS-FQDN")"
   tfe_fqdn="$(get_ssm_parameter_value "/TFE/TFE-FQDN")"
+  elasticache_fqdn="$(get_ssm_parameter_value "/TFE/ElastiCache-FQDN")"
 
   # S3 Configuration
   s3_region="$(get_ssm_parameter_value "/TFE/S3-Region")"
@@ -138,6 +139,9 @@ main() {
   tfe_db_username="$(get_ssm_parameter_value "/TFE/DB-Username")"
   tfe_db_password="$(get_ssm_parameter_value "/TFE/DB-Password")"
   postgresql_major_version="$(get_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
+
+  # TFE Redis Configuration
+  tfe_redis_auth_token="$(get_ssm_parameter_value "/TFE/Redis-Auth-Token")"
 
   # TFE Application Configuration
   tfe_license="$(get_ssm_parameter_value "/TFE/License")"
@@ -279,7 +283,7 @@ EOF
 TFE_LICENSE="${tfe_license}"
 TFE_HOSTNAME="${tfe_fqdn}"
 TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
-TFE_OPERATIONAL_MODE="external"
+TFE_OPERATIONAL_MODE="active-active"
 TFE_DISK_CACHE_VOLUME_NAME="terraform-enterprise-cache"
 TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
 TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
@@ -293,6 +297,11 @@ TFE_OBJECT_STORAGE_TYPE="s3"
 TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
 TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
+TFE_REDIS_HOST="${elasticache_fqdn}"
+TFE_REDIS_USER="default"
+TFE_REDIS_PASSWORD="${tfe_redis_auth_token}"
+TFE_REDIS_USE_TLS="true"
+TFE_REDIS_USE_AUTH="true"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
@@ -319,6 +328,11 @@ services:
       - TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE
       - TFE_OBJECT_STORAGE_S3_REGION
       - TFE_OBJECT_STORAGE_S3_BUCKET
+      - TFE_REDIS_HOST
+      - TFE_REDIS_USER
+      - TFE_REDIS_PASSWORD
+      - TFE_REDIS_USE_TLS
+      - TFE_REDIS_USE_AUTH
     cap_add:
       - IPC_LOCK
     read_only: true
