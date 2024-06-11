@@ -15,7 +15,7 @@ resource "aws_ssm_parameter" "tfe_version" {
 }
 
 resource "random_string" "tfe_encryption_password" {
-  length = 32
+  length = 256
 }
 
 resource "aws_ssm_parameter" "tfe_encryption_password" {
@@ -51,7 +51,7 @@ resource "aws_ssm_parameter" "tfe_db_username" {
 }
 
 resource "random_string" "tfe_db_password" {
-  length = 32
+  length = 64
 }
 
 resource "aws_ssm_parameter" "tfe_db_password" {
@@ -114,7 +114,8 @@ resource "aws_ssm_parameter" "elasticache_fqdn" {
 }
 
 resource "random_string" "tfe_redis_auth_token" {
-  length = 64
+  length  = 128
+  special = false
 }
 
 resource "aws_ssm_parameter" "redis_auth_token" {
