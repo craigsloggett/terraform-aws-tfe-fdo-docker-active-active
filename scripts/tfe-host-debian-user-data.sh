@@ -87,6 +87,25 @@ set_ec2_http_put_response_hop_limit() {
     >/dev/null 2>&1
 }
 
+get_ec2_private_ip_address() {
+  log "  Grabbing the EC2 instance metadata token."
+
+  aws_token="$(
+    curl -s -X \
+      PUT "http://169.254.169.254/latest/api/token" \
+      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
+  )"
+
+  log "  Grabbing the EC2 instance private IPv4 address."
+
+  private_ip_address="$(
+    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
+      -s http://169.254.169.254/latest/meta-data/local-ipv4
+  )"
+
+  printf '%s\n' "${private_ip_address}"
+}
+
 wait_for_tfe_service() {
   log "  Checking the status of the TFE service."
   while ! docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl app status >/dev/null 2>&1; do
@@ -302,6 +321,7 @@ TFE_REDIS_USER="default"
 TFE_REDIS_PASSWORD="${tfe_redis_auth_token}"
 TFE_REDIS_USE_TLS="true"
 TFE_REDIS_USE_AUTH="true"
+TFE_VAULT_CLUSTER_ADDRESS="https://$(get_ec2_private_ip_address):8201"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
@@ -333,6 +353,7 @@ services:
       - TFE_REDIS_PASSWORD
       - TFE_REDIS_USE_TLS
       - TFE_REDIS_USE_AUTH
+      - TFE_VAULT_CLUSTER_ADDRESS
     cap_add:
       - IPC_LOCK
     read_only: true
@@ -343,6 +364,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8201:8201"
     volumes:
       - type: bind
         source: /var/run/docker.sock

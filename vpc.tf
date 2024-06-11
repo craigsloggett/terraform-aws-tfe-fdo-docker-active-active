@@ -110,6 +110,17 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ssh" {
   to_port     = 22
 }
 
+resource "aws_vpc_security_group_ingress_rule" "tfe_vault" {
+  security_group_id = aws_security_group.tfe.id
+  description       = "Allow Vault traffic ingress to the TFE Hosts from private subnets."
+
+  cidr_ipv4   = "10.0.0.0/16"
+  ip_protocol = "tcp"
+  from_port   = 8201
+  to_port     = 8201
+}
+
+
 resource "aws_vpc_security_group_egress_rule" "tfe" {
   security_group_id = aws_security_group.tfe.id
   description       = "Allow all outbound traffic from the TFE Hosts."
