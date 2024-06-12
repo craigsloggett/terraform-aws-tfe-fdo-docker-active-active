@@ -128,10 +128,13 @@ data "aws_iam_policy_document" "tfe_s3" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:*"
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
+      "s3:ListBucket"
     ]
     resources = [
-      aws_s3_bucket.tfe.arn
+      "${aws_s3_bucket.tfe.arn}/*"
     ]
   }
 }
