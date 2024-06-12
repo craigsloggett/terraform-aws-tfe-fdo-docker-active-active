@@ -87,6 +87,25 @@ set_ec2_http_put_response_hop_limit() {
     >/dev/null 2>&1
 }
 
+get_ec2_private_ip_address() {
+  log "  Grabbing the EC2 instance metadata token."
+
+  aws_token="$(
+    curl -s -X \
+      PUT "http://169.254.169.254/latest/api/token" \
+      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
+  )"
+
+  log "  Grabbing the EC2 instance private IPv4 address."
+
+  private_ip_address="$(
+    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
+      -s http://169.254.169.254/latest/meta-data/local-ipv4
+  )"
+
+  printf '%s\n' "${private_ip_address}"
+}
+
 wait_for_tfe_service() {
   log "  Checking the status of the TFE service."
   while ! docker compose -f /run/terraform-enterprise/docker-compose.yml exec tfe /usr/local/bin/tfectl app status >/dev/null 2>&1; do
@@ -284,7 +303,6 @@ TFE_LICENSE="${tfe_license}"
 TFE_HOSTNAME="${tfe_fqdn}"
 TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
 TFE_OPERATIONAL_MODE="active-active"
-TFE_DISK_CACHE_VOLUME_NAME="terraform-enterprise-cache"
 TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
 TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
 TFE_TLS_CA_BUNDLE_FILE="/etc/ssl/private/terraform-enterprise/bundle.pem"
@@ -297,11 +315,13 @@ TFE_OBJECT_STORAGE_TYPE="s3"
 TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
 TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
 TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
+TFE_OBJECT_STORAGE_S3_SERVER_SIDE_ENCRYPTION="aws:kms"
 TFE_REDIS_HOST="${elasticache_fqdn}"
 TFE_REDIS_USER="default"
 TFE_REDIS_PASSWORD="${tfe_redis_auth_token}"
 TFE_REDIS_USE_TLS="true"
 TFE_REDIS_USE_AUTH="true"
+TFE_VAULT_CLUSTER_ADDRESS="https://$(get_ec2_private_ip_address):8201"
 EOF
 
   cat <<EOF >/run/terraform-enterprise/docker-compose.yml
@@ -315,7 +335,6 @@ services:
       - TFE_HOSTNAME
       - TFE_ENCRYPTION_PASSWORD
       - TFE_OPERATIONAL_MODE
-      - TFE_DISK_CACHE_VOLUME_NAME
       - TFE_TLS_CERT_FILE
       - TFE_TLS_KEY_FILE
       - TFE_TLS_CA_BUNDLE_FILE
@@ -328,11 +347,13 @@ services:
       - TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE
       - TFE_OBJECT_STORAGE_S3_REGION
       - TFE_OBJECT_STORAGE_S3_BUCKET
+      - TFE_OBJECT_STORAGE_S3_SERVER_SIDE_ENCRYPTION
       - TFE_REDIS_HOST
       - TFE_REDIS_USER
       - TFE_REDIS_PASSWORD
       - TFE_REDIS_USE_TLS
       - TFE_REDIS_USE_AUTH
+      - TFE_VAULT_CLUSTER_ADDRESS
     cap_add:
       - IPC_LOCK
     read_only: true
@@ -343,6 +364,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8201:8201"
     volumes:
       - type: bind
         source: /var/run/docker.sock

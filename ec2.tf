@@ -92,8 +92,8 @@ resource "aws_launch_template" "tfe" {
 resource "aws_autoscaling_group" "tfe" {
   name                      = "tfe-web-asg"
   min_size                  = 0
-  max_size                  = 1
-  desired_capacity          = 1
+  max_size                  = 2
+  desired_capacity          = 2
   vpc_zone_identifier       = module.vpc.private_subnets
   health_check_grace_period = 300
   health_check_type         = "ELB"

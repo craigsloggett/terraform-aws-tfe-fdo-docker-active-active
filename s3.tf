@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "tfe" {
-  bucket = local.bucket_name
+  bucket        = local.bucket_name
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_versioning" "tfe_versioning" {
