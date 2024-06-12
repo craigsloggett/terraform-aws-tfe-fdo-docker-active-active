@@ -11,10 +11,10 @@ resource "aws_elasticache_replication_group" "tfe" {
   replication_group_id       = var.elasticache_name
   description                = "Terraform Enterprise Redis Cache"
   automatic_failover_enabled = true
-  node_type                  = "cache.m4.large"
+  node_type                  = var.elasticache_node_type
   port                       = 6379
   engine                     = "redis"
-  engine_version             = "7.1"
+  engine_version             = var.redis_version
   multi_az_enabled           = true
   at_rest_encryption_enabled = true
   transit_encryption_enabled = true
