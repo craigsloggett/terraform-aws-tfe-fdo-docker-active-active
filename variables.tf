@@ -15,6 +15,12 @@ variable "postgresql_version" {
   default     = "15.7"
 }
 
+variable "redis_version" {
+  type        = string
+  description = "The version of the Redis engine to deploy."
+  default     = "7.1"
+}
+
 variable "tfe_hostname" {
   type        = string
   description = "The hostname of Terraform Enterprise instance."
@@ -133,6 +139,12 @@ variable "elasticache_name" {
   type        = string
   description = "The name of the cache used as the TFE Redis cache."
   default     = "tfe-redis-cache"
+}
+
+variable "elasticache_node_type" {
+  type        = string
+  description = "The node type (size) of the ElastiCache nodes."
+  default     = "cache.t3.medium"
 }
 
 variable "elasticache_security_group_name" {

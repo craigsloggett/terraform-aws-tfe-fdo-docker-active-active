@@ -123,6 +123,7 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM Role assigned to the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-iam-role"` | no |
 | <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-instance-profile"` | no |
 | <a name="input_elasticache_name"></a> [elasticache\_name](#input\_elasticache\_name) | The name of the cache used as the TFE Redis cache. | `string` | `"tfe-redis-cache"` | no |
+| <a name="input_elasticache_node_type"></a> [elasticache\_node\_type](#input\_elasticache\_node\_type) | The node type (size) of the ElastiCache nodes. | `string` | `"cache.t3.medium"` | no |
 | <a name="input_elasticache_security_group_name"></a> [elasticache\_security\_group\_name](#input\_elasticache\_security\_group\_name) | The name of the ElastiCache Security Group. | `string` | `"elasticache-sg"` | no |
 | <a name="input_elasticache_subnet_group_name"></a> [elasticache\_subnet\_group\_name](#input\_elasticache\_subnet\_group\_name) | The name of the ElastiCache Subnet Group. | `string` | `"elasticache-sg"` | no |
 | <a name="input_lb_name"></a> [lb\_name](#input\_lb\_name) | The name of the application load balancer used to distribute HTTPS traffic across TFE hosts. | `string` | `"tfe-web-alb"` | no |
@@ -134,6 +135,7 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_rds_parameter_group_name"></a> [rds\_parameter\_group\_name](#input\_rds\_parameter\_group\_name) | The name of the RDS Parameter Group. | `string` | `"rds-pg"` | no |
 | <a name="input_rds_security_group_name"></a> [rds\_security\_group\_name](#input\_rds\_security\_group\_name) | The name of the RDS Security Group. | `string` | `"rds-sg"` | no |
 | <a name="input_rds_subnet_group_name"></a> [rds\_subnet\_group\_name](#input\_rds\_subnet\_group\_name) | The name of the RDS Subnet Group. | `string` | `"rds-sg"` | no |
+| <a name="input_redis_version"></a> [redis\_version](#input\_redis\_version) | The version of the Redis engine to deploy. | `string` | `"7.1"` | no |
 | <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | The name of the Route53 Zone used to host TFE. | `string` | `"craig-sloggett.sbx.hashidemos.io"` | no |
 | <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | The name of the S3 VPC Endpoint. | `string` | `"tfe-vpce-s3"` | no |
 | <a name="input_tfe_db_name"></a> [tfe\_db\_name](#input\_tfe\_db\_name) | The name of the database used to store TFE data in. | `string` | `"tfe"` | no |
