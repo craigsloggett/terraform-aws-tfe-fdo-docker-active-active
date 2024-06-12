@@ -303,7 +303,6 @@ TFE_LICENSE="${tfe_license}"
 TFE_HOSTNAME="${tfe_fqdn}"
 TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
 TFE_OPERATIONAL_MODE="active-active"
-TFE_DISK_CACHE_VOLUME_NAME="terraform-enterprise-cache"
 TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
 TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
 TFE_TLS_CA_BUNDLE_FILE="/etc/ssl/private/terraform-enterprise/bundle.pem"
@@ -336,7 +335,6 @@ services:
       - TFE_HOSTNAME
       - TFE_ENCRYPTION_PASSWORD
       - TFE_OPERATIONAL_MODE
-      - TFE_DISK_CACHE_VOLUME_NAME
       - TFE_TLS_CERT_FILE
       - TFE_TLS_KEY_FILE
       - TFE_TLS_CA_BUNDLE_FILE
