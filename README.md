@@ -94,6 +94,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_vpc_security_group_ingress_rule.rds](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.tfe_https](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.tfe_ssh](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
+| [aws_vpc_security_group_ingress_rule.tfe_vault](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [random_string.tfe_db_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
 | [random_string.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
 | [random_string.tfe_redis_auth_token](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
