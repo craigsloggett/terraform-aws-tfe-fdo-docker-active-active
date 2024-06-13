@@ -24,16 +24,12 @@ ec2_bastion_instance_name = "Bastion Host"
 ec2_bastion_instance_type = "t3a.nano"
 ec2_tfe_instance_name     = "TFE Host"
 ec2_tfe_instance_type     = "t3a.medium"
-
-# ASG
-asg_name             = "tfe-asg"
-asg_min_size         = 0
-asg_max_size         = 2
-asg_desired_capacity = 2
-
-# ALB
-lb_name              = "tfe-web-alb"
-lb_target_group_name = "tfe-web-alb-tg"
+asg_name                  = "tfe-asg"
+asg_min_size              = 0
+asg_max_size              = 2
+asg_desired_capacity      = 2
+lb_name                   = "tfe-web-alb"
+lb_target_group_name      = "tfe-web-alb-tg"
 
 # RDS
 postgresql_version           = "15.7"

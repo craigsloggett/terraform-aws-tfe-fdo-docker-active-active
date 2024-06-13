@@ -107,8 +107,6 @@ variable "ec2_tfe_instance_type" {
   default     = "t3a.medium"
 }
 
-# ASG
-
 variable "asg_name" {
   type        = string
   description = "The name of the ASG for the TFE hosts."
@@ -132,8 +130,6 @@ variable "asg_desired_capacity" {
   description = "The desired number of hosts active in the TFE auto scaling group."
   default     = 2
 }
-
-# ALB
 
 variable "lb_name" {
   type        = string
