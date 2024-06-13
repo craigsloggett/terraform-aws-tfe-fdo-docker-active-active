@@ -99,7 +99,7 @@ data "aws_iam_policy_document" "tfe_secrets_manager" {
       "secretsmanager:ListSecretVersionIds"
     ]
     resources = [
-      data.aws_secretsmanager_secret_version.master_user_secret.arn,
+      aws_db_instance.tfe.master_user_secret[0].secret_arn
     ]
   }
   statement {
