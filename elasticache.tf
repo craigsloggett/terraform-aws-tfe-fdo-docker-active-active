@@ -8,7 +8,7 @@ resource "aws_elasticache_subnet_group" "tfe" {
 }
 
 resource "aws_elasticache_replication_group" "tfe" {
-  replication_group_id       = var.elasticache_name
+  replication_group_id       = var.elasticache_replication_group_name
   description                = "Terraform Enterprise Redis Cache"
   automatic_failover_enabled = true
   node_type                  = var.elasticache_node_type
@@ -18,7 +18,7 @@ resource "aws_elasticache_replication_group" "tfe" {
   multi_az_enabled           = true
   at_rest_encryption_enabled = true
   transit_encryption_enabled = true
-  auth_token                 = random_string.tfe_redis_auth_token.result
+  auth_token                 = random_string.tfe_redis_password.result
   num_cache_clusters         = 2
   snapshot_retention_limit   = 0
   security_group_ids         = [aws_security_group.elasticache.id]

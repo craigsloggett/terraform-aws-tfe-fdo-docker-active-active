@@ -1,13 +1,13 @@
 resource "aws_key_pair" "self" {
   key_name   = "tfe-public-key"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILospQ0z+2yER9Q7Jh+4X91IRU+FzztRbkYg5t9C0B6o"
+  public_key = var.ec2_bastion_ssh_public_key
 }
 
 # Bastion Host
 
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.debian.id
-  instance_type               = "t3a.medium"
+  instance_type               = var.ec2_bastion_instance_type
   subnet_id                   = module.vpc.public_subnets[0]
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   associate_public_ip_address = true
@@ -32,7 +32,7 @@ resource "aws_instance" "bastion" {
   }
 
   tags = {
-    Name = "Bastion Host"
+    Name = var.ec2_bastion_instance_name
   }
 }
 
@@ -41,7 +41,7 @@ resource "aws_instance" "bastion" {
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = data.aws_ami.debian.id
-  instance_type          = "t3.medium"
+  instance_type          = var.ec2_tfe_instance_type
   key_name               = aws_key_pair.self.key_name
   update_default_version = true
   user_data              = base64encode(file("${path.module}/scripts/tfe-host-debian-user-data.sh"))
@@ -79,7 +79,7 @@ resource "aws_launch_template" "tfe" {
     resource_type = "instance"
 
     tags = {
-      Name = "TFE Host"
+      Name = var.ec2_tfe_instance_name
     }
   }
 
@@ -90,10 +90,10 @@ resource "aws_launch_template" "tfe" {
 }
 
 resource "aws_autoscaling_group" "tfe" {
-  name                      = "tfe-web-asg"
-  min_size                  = 0
-  max_size                  = 2
-  desired_capacity          = 2
+  name                      = var.asg_name
+  min_size                  = var.asg_min_size
+  max_size                  = var.asg_max_size
+  desired_capacity          = var.asg_desired_capacity
   vpc_zone_identifier       = module.vpc.private_subnets
   health_check_grace_period = 300
   health_check_type         = "ELB"

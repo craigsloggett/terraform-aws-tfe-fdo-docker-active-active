@@ -1,7 +1,23 @@
+# Required
+
 variable "tfe_license" {
   type        = string
   description = "The license for Terraform Enterprise."
 }
+
+variable "route53_zone_name" {
+  type        = string
+  description = "The name of the Route53 zone used to host Terraform Enterprise."
+}
+
+variable "ec2_bastion_ssh_public_key" {
+  type        = string
+  description = "The SSH public key used to authenticate to the Bastion EC2 instance."
+}
+
+# Optional
+
+# Terraform Enterprise
 
 variable "tfe_version" {
   type        = string
@@ -9,82 +25,104 @@ variable "tfe_version" {
   default     = "v202401-2"
 }
 
-variable "postgresql_version" {
-  type        = string
-  description = "The version of the PostgreSQL engine to deploy."
-  default     = "15.7"
-}
-
-variable "redis_version" {
-  type        = string
-  description = "The version of the Redis engine to deploy."
-  default     = "7.1"
-}
-
-variable "tfe_hostname" {
-  type        = string
-  description = "The hostname of Terraform Enterprise instance."
-  default     = "tfe"
-}
-
-variable "tfe_db_name" {
-  type        = string
-  description = "The name of the database used to store TFE data in."
-  default     = "tfe"
-}
-
-variable "tfe_db_username" {
-  type        = string
-  description = "The username used to access the TFE database."
-  default     = "tfe_user"
-}
+# VPC
 
 variable "vpc_name" {
   type        = string
-  description = "The name of the VPC used to host TFE."
+  description = "The name of the VPC used to host Terraform Enterprise."
   default     = "tfe-vpc"
+}
+
+variable "vpc_azs" {
+  type        = list(string)
+  description = "A list of availability zone names to deploy to in the region."
+  default     = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
 }
 
 variable "s3_vpc_endpoint_name" {
   type        = string
-  description = "The name of the S3 VPC Endpoint."
+  description = "The name of the S3 VPC endpoint."
   default     = "tfe-vpce-s3"
 }
 
-variable "bastion_security_group_name" {
+variable "ec2_bastion_security_group_name" {
   type        = string
-  description = "The name of the Bastion Host Security Group."
-  default     = "bastion-sg"
+  description = "The name of the EC2 Bastion Host security group."
+  default     = "ec2-bastion-sg"
 }
 
 variable "tfe_security_group_name" {
   type        = string
-  description = "The name of the TFE Hosts Security Group."
+  description = "The name of the Terraform Enterprise EC2 hosts security group."
   default     = "tfe-sg"
 }
 
 variable "alb_security_group_name" {
   type        = string
-  description = "The name of the Application Load Balancer Security Group."
+  description = "The name of the Application Load Balancer security group."
   default     = "alb-sg"
 }
 
-variable "route53_zone_name" {
+variable "rds_security_group_name" {
   type        = string
-  description = "The name of the Route53 Zone used to host TFE."
-  default     = "craig-sloggett.sbx.hashidemos.io"
+  description = "The name of the RDS security group."
+  default     = "rds-sg"
 }
 
-variable "ec2_iam_role_name" {
+variable "elasticache_security_group_name" {
   type        = string
-  description = "The name of the IAM Role assigned to the EC2 Instance Profile assigned to the TFE hosts."
-  default     = "tfe-iam-role"
+  description = "The name of the ElastiCache security group."
+  default     = "elasticache-sg"
 }
 
-variable "ec2_instance_profile_name" {
+# EC2
+
+variable "ec2_bastion_instance_name" {
   type        = string
-  description = "The name of the EC2 Instance Profile assigned to the TFE hosts."
-  default     = "tfe-instance-profile"
+  description = "The name of the Bastion EC2 instance."
+  default     = "Bastion Host"
+}
+
+variable "ec2_bastion_instance_type" {
+  type        = string
+  description = "The type (size) of the Bastion EC2 instance."
+  default     = "t3.nano"
+}
+
+variable "ec2_tfe_instance_name" {
+  type        = string
+  description = "The name of the TFE EC2 instance."
+  default     = "TFE Host"
+}
+
+variable "ec2_tfe_instance_type" {
+  type        = string
+  description = "The type (size) of the TFE EC2 instance."
+  default     = "t3.medium"
+}
+
+variable "asg_name" {
+  type        = string
+  description = "The name of the ASG for the TFE hosts."
+  default     = "tfe-asg"
+}
+
+variable "asg_min_size" {
+  type        = number
+  description = "The minimum number of hosts allowed in the TFE auto scaling group."
+  default     = 0
+}
+
+variable "asg_max_size" {
+  type        = number
+  description = "The maximum number of hosts allowed in the TFE auto scaling group."
+  default     = 2
+}
+
+variable "asg_desired_capacity" {
+  type        = number
+  description = "The desired number of hosts active in the TFE auto scaling group."
+  default     = 2
 }
 
 variable "lb_name" {
@@ -99,16 +137,30 @@ variable "lb_target_group_name" {
   default     = "tfe-web-alb-tg"
 }
 
-variable "rds_instance_name" {
+# RDS
+
+variable "postgresql_version" {
   type        = string
-  description = "The name of the RDS instance used to externalize TFE services."
-  default     = "tfe-postgres-db"
+  description = "The version of the PostgreSQL engine to deploy."
+  default     = "15.7"
 }
 
-variable "rds_instance_master_username" {
+variable "tfe_database_name" {
   type        = string
-  description = "The username of the RDS master user."
+  description = "The name of the database used to store Terraform Enterprise data in."
   default     = "tfe"
+}
+
+variable "tfe_database_user" {
+  type        = string
+  description = "The user with access the Terraform Enterprise database."
+  default     = "tfe"
+}
+
+variable "rds_instance_name" {
+  type        = string
+  description = "The name of the RDS instance used to store Terraform Enterprise data in."
+  default     = "tfe-postgres-db"
 }
 
 variable "rds_instance_class" {
@@ -117,27 +169,35 @@ variable "rds_instance_class" {
   default     = "db.t3.medium"
 }
 
-variable "rds_security_group_name" {
+variable "rds_instance_master_user" {
   type        = string
-  description = "The name of the RDS Security Group."
-  default     = "rds-sg"
+  description = "The RDS master user."
+  default     = "tfeadmin"
 }
 
 variable "rds_subnet_group_name" {
   type        = string
-  description = "The name of the RDS Subnet Group."
+  description = "The name of the RDS subnet group."
   default     = "rds-sg"
 }
 
 variable "rds_parameter_group_name" {
   type        = string
-  description = "The name of the RDS Parameter Group."
+  description = "The name of the RDS parameter group."
   default     = "rds-pg"
 }
 
-variable "elasticache_name" {
+# ElastiCache
+
+variable "redis_version" {
   type        = string
-  description = "The name of the cache used as the TFE Redis cache."
+  description = "The version of the Redis engine to deploy."
+  default     = "7.1"
+}
+
+variable "elasticache_replication_group_name" {
+  type        = string
+  description = "The name of the ElastiCache replication group used as the Terraform Enterprise Redis cache."
   default     = "tfe-redis-cache"
 }
 
@@ -147,14 +207,30 @@ variable "elasticache_node_type" {
   default     = "cache.t3.medium"
 }
 
-variable "elasticache_security_group_name" {
+variable "elasticache_subnet_group_name" {
   type        = string
-  description = "The name of the ElastiCache Security Group."
+  description = "The name of the ElastiCache subnet group."
   default     = "elasticache-sg"
 }
 
-variable "elasticache_subnet_group_name" {
+# Route53
+
+variable "tfe_subdomain" {
   type        = string
-  description = "The name of the ElastiCache Subnet Group."
-  default     = "elasticache-sg"
+  description = "The subdomain used for Terraform Enterprise."
+  default     = "tfe"
+}
+
+# IAM
+
+variable "ec2_iam_role_name" {
+  type        = string
+  description = "The name of the IAM role assigned to the EC2 instance profile assigned to the Terraform Enterprise hosts."
+  default     = "tfe-iam-role"
+}
+
+variable "ec2_instance_profile_name" {
+  type        = string
+  description = "The name of the EC2 instance profile assigned to the Terraform Enterprise hosts."
+  default     = "tfe-instance-profile"
 }

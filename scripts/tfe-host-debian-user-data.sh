@@ -144,28 +144,27 @@ main() {
 
   log "Populating configuration variables."
 
-  # FQDNs
-  rds_fqdn="$(get_ssm_parameter_value "/TFE/RDS-FQDN")"
-  tfe_fqdn="$(get_ssm_parameter_value "/TFE/TFE-FQDN")"
-  elasticache_fqdn="$(get_ssm_parameter_value "/TFE/ElastiCache-FQDN")"
+  tfe_version="$(get_ssm_parameter_value "/TFE/TFE_VERSION")"
+  postgresql_major_version="$(get_ssm_parameter_value "/TFE/POSTGRESQL_MAJOR_VERSION")"
 
-  # S3 Configuration
-  s3_region="$(get_ssm_parameter_value "/TFE/S3-Region")"
-  s3_bucket_id="$(get_ssm_parameter_value "/TFE/S3-Bucket-ID")"
+  # Application Settings
+  tfe_encryption_password="$(get_ssm_parameter_value "/TFE/TFE_ENCRYPTION_PASSWORD")"
+  tfe_hostname="$(get_ssm_parameter_value "/TFE/TFE_HOSTNAME")"
+  tfe_license="$(get_ssm_parameter_value "/TFE/TFE_LICENSE")"
 
-  # TFE Database Configuration
-  tfe_db_name="$(get_ssm_parameter_value "/TFE/DB-Name")"
-  tfe_db_username="$(get_ssm_parameter_value "/TFE/DB-Username")"
-  tfe_db_password="$(get_ssm_parameter_value "/TFE/DB-Password")"
-  postgresql_major_version="$(get_ssm_parameter_value "/TFE/PostgreSQL-Major-Version")"
+  # Database Settings
+  tfe_database_host="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_HOST")"
+  tfe_database_name="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_NAME")"
+  tfe_database_user="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_USER")"
+  tfe_database_password="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_PASSWORD")"
 
-  # TFE Redis Configuration
-  tfe_redis_auth_token="$(get_ssm_parameter_value "/TFE/Redis-Auth-Token")"
+  # Redis Settings
+  tfe_redis_host="$(get_ssm_parameter_value "/TFE/TFE_REDIS_HOST")"
+  tfe_redis_password="$(get_ssm_parameter_value "/TFE/TFE_REDIS_PASSWORD")"
 
-  # TFE Application Configuration
-  tfe_license="$(get_ssm_parameter_value "/TFE/License")"
-  tfe_version="$(get_ssm_parameter_value "/TFE/Version")"
-  tfe_encryption_password="$(get_ssm_parameter_value "/TFE/Encryption-Password")"
+  # Object Storage Settings
+  tfe_object_storage_s3_region="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_REGION")"
+  tfe_object_storage_s3_bucket="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_BUCKET")"
 
   # Wait for the network to be available.
   wait_for_network
@@ -213,10 +212,10 @@ EOF
   # main() to use the configuration already captured.
   execute_sql() {
     PGPASSWORD="${rds_master_password}" psql \
-      -h "${rds_fqdn}" \
+      -h "${tfe_database_host}" \
       -p 5432 \
       -U "${rds_master_username}" \
-      -d "${tfe_db_name}" \
+      -d "${tfe_database_name}" \
       -c "${1}" \
       >/dev/null 2>&1
   }
@@ -230,9 +229,9 @@ EOF
 
   log "Configuring a regular user for the TFE PostgreSQL database."
 
-  execute_sql "CREATE USER ${tfe_db_username} WITH PASSWORD '${tfe_db_password}'" || true
-  execute_sql "GRANT ALL PRIVILEGES ON DATABASE ${tfe_db_name} TO ${tfe_db_username}" || true
-  execute_sql "ALTER DATABASE ${tfe_db_name} OWNER TO ${tfe_db_username}" || true
+  execute_sql "CREATE USER ${tfe_database_user} WITH PASSWORD '${tfe_database_password}'" || true
+  execute_sql "GRANT ALL PRIVILEGES ON DATABASE ${tfe_database_name} TO ${tfe_database_user}" || true
+  execute_sql "ALTER DATABASE ${tfe_database_name} OWNER TO ${tfe_database_user}" || true
 
   log "Setting up Docker."
 
@@ -277,7 +276,7 @@ EOF
       -keyout /etc/ssl/private/terraform-enterprise/key.pem \
       -out /etc/ssl/private/terraform-enterprise/cert.pem \
       -sha256 -days 365 \
-      -subj "/C=CA/O=HashiCorp/CN=${tfe_fqdn}" \
+      -subj "/C=CA/O=HashiCorp/CN=${tfe_hostname}" \
       >/dev/null 2>&1
   fi
 
@@ -300,25 +299,25 @@ EOF
   # Create a .env file to correctly handle special characters in passwords.
   cat <<EOF >/run/terraform-enterprise/.env
 TFE_LICENSE="${tfe_license}"
-TFE_HOSTNAME="${tfe_fqdn}"
+TFE_HOSTNAME="${tfe_hostname}"
 TFE_ENCRYPTION_PASSWORD='${tfe_encryption_password}'
 TFE_OPERATIONAL_MODE="active-active"
 TFE_TLS_CERT_FILE="/etc/ssl/private/terraform-enterprise/cert.pem"
 TFE_TLS_KEY_FILE="/etc/ssl/private/terraform-enterprise/key.pem"
 TFE_TLS_CA_BUNDLE_FILE="/etc/ssl/private/terraform-enterprise/bundle.pem"
 TFE_IACT_SUBNETS="10.0.0.0/16"
-TFE_DATABASE_HOST="${rds_fqdn}"
-TFE_DATABASE_NAME="${tfe_db_name}"
-TFE_DATABASE_USER="${tfe_db_username}"
-TFE_DATABASE_PASSWORD='${tfe_db_password}'
+TFE_DATABASE_HOST="${tfe_database_host}"
+TFE_DATABASE_NAME="${tfe_database_name}"
+TFE_DATABASE_USER="${tfe_database_user}"
+TFE_DATABASE_PASSWORD='${tfe_database_password}'
 TFE_OBJECT_STORAGE_TYPE="s3"
 TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE="true"
-TFE_OBJECT_STORAGE_S3_REGION="${s3_region}"
-TFE_OBJECT_STORAGE_S3_BUCKET="${s3_bucket_id}"
+TFE_OBJECT_STORAGE_S3_REGION="${tfe_object_storage_s3_region}"
+TFE_OBJECT_STORAGE_S3_BUCKET="${tfe_object_storage_s3_bucket}"
 TFE_OBJECT_STORAGE_S3_SERVER_SIDE_ENCRYPTION="aws:kms"
-TFE_REDIS_HOST="${elasticache_fqdn}"
+TFE_REDIS_HOST="${tfe_redis_host}"
 TFE_REDIS_USER="default"
-TFE_REDIS_PASSWORD="${tfe_redis_auth_token}"
+TFE_REDIS_PASSWORD="${tfe_redis_password}"
 TFE_REDIS_USE_TLS="true"
 TFE_REDIS_USE_AUTH="true"
 TFE_VAULT_CLUSTER_ADDRESS="https://$(get_ec2_private_ip_address):8201"
@@ -421,7 +420,7 @@ EOF
   wait_for_tfe_nodes
 
   # Put the Admin Token URL in the Parameter Store for convenience.
-  set_ssm_parameter_value "/TFE/Admin-Token-URL" "$(get_tfe_admin_token_url)"
+  set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "$(get_tfe_admin_token_url)"
 }
 
 main "$@"

@@ -66,19 +66,19 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_security_group.elasticache](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/security_group) | resource |
 | [aws_security_group.rds](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/security_group) | resource |
 | [aws_security_group.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/security_group) | resource |
-| [aws_ssm_parameter.elasticache_fqdn](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.postgresql_major_version](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.rds_fqdn](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.redis_auth_token](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.s3_bucket_id](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.s3_region](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_admin_token_url](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.tfe_db_name](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.tfe_db_password](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.tfe_db_username](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_database_host](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_database_name](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_database_password](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_database_user](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
-| [aws_ssm_parameter.tfe_fqdn](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_hostname](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_license](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_object_storage_s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_object_storage_s3_region](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_redis_host](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
+| [aws_ssm_parameter.tfe_redis_password](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_ssm_parameter.tfe_version](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/ssm_parameter) | resource |
 | [aws_vpc_endpoint.s3](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint_route_table_association.private](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_endpoint_route_table_association) | resource |
@@ -95,9 +95,9 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_vpc_security_group_ingress_rule.tfe_https](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.tfe_ssh](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
 | [aws_vpc_security_group_ingress_rule.tfe_vault](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/resources/vpc_security_group_ingress_rule) | resource |
-| [random_string.tfe_db_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
+| [random_string.tfe_database_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
 | [random_string.tfe_encryption_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
-| [random_string.tfe_redis_auth_token](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
+| [random_string.tfe_redis_password](https://registry.terraform.io/providers/hashicorp/random/3.6.2/docs/resources/string) | resource |
 | [aws_ami.debian](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/iam_policy_document) | data source |
@@ -117,33 +117,43 @@ Infrastructure as Code Repository to Standup TFE
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_alb_security_group_name"></a> [alb\_security\_group\_name](#input\_alb\_security\_group\_name) | The name of the Application Load Balancer Security Group. | `string` | `"alb-sg"` | no |
-| <a name="input_bastion_security_group_name"></a> [bastion\_security\_group\_name](#input\_bastion\_security\_group\_name) | The name of the Bastion Host Security Group. | `string` | `"bastion-sg"` | no |
-| <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM Role assigned to the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-iam-role"` | no |
-| <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-instance-profile"` | no |
-| <a name="input_elasticache_name"></a> [elasticache\_name](#input\_elasticache\_name) | The name of the cache used as the TFE Redis cache. | `string` | `"tfe-redis-cache"` | no |
+| <a name="input_alb_security_group_name"></a> [alb\_security\_group\_name](#input\_alb\_security\_group\_name) | The name of the Application Load Balancer security group. | `string` | `"alb-sg"` | no |
+| <a name="input_asg_desired_capacity"></a> [asg\_desired\_capacity](#input\_asg\_desired\_capacity) | The desired number of hosts active in the TFE auto scaling group. | `number` | `2` | no |
+| <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | The maximum number of hosts allowed in the TFE auto scaling group. | `number` | `2` | no |
+| <a name="input_asg_min_size"></a> [asg\_min\_size](#input\_asg\_min\_size) | The minimum number of hosts allowed in the TFE auto scaling group. | `number` | `0` | no |
+| <a name="input_asg_name"></a> [asg\_name](#input\_asg\_name) | The name of the ASG for the TFE hosts. | `string` | `"tfe-asg"` | no |
+| <a name="input_ec2_bastion_instance_name"></a> [ec2\_bastion\_instance\_name](#input\_ec2\_bastion\_instance\_name) | The name of the Bastion EC2 instance. | `string` | `"Bastion Host"` | no |
+| <a name="input_ec2_bastion_instance_type"></a> [ec2\_bastion\_instance\_type](#input\_ec2\_bastion\_instance\_type) | The type (size) of the Bastion EC2 instance. | `string` | `"t3.nano"` | no |
+| <a name="input_ec2_bastion_security_group_name"></a> [ec2\_bastion\_security\_group\_name](#input\_ec2\_bastion\_security\_group\_name) | The name of the EC2 Bastion Host security group. | `string` | `"ec2-bastion-sg"` | no |
+| <a name="input_ec2_bastion_ssh_public_key"></a> [ec2\_bastion\_ssh\_public\_key](#input\_ec2\_bastion\_ssh\_public\_key) | The SSH public key used to authenticate to the Bastion EC2 instance. | `string` | n/a | yes |
+| <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM role assigned to the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-iam-role"` | no |
+| <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-instance-profile"` | no |
+| <a name="input_ec2_tfe_instance_name"></a> [ec2\_tfe\_instance\_name](#input\_ec2\_tfe\_instance\_name) | The name of the TFE EC2 instance. | `string` | `"TFE Host"` | no |
+| <a name="input_ec2_tfe_instance_type"></a> [ec2\_tfe\_instance\_type](#input\_ec2\_tfe\_instance\_type) | The type (size) of the TFE EC2 instance. | `string` | `"t3.medium"` | no |
 | <a name="input_elasticache_node_type"></a> [elasticache\_node\_type](#input\_elasticache\_node\_type) | The node type (size) of the ElastiCache nodes. | `string` | `"cache.t3.medium"` | no |
-| <a name="input_elasticache_security_group_name"></a> [elasticache\_security\_group\_name](#input\_elasticache\_security\_group\_name) | The name of the ElastiCache Security Group. | `string` | `"elasticache-sg"` | no |
-| <a name="input_elasticache_subnet_group_name"></a> [elasticache\_subnet\_group\_name](#input\_elasticache\_subnet\_group\_name) | The name of the ElastiCache Subnet Group. | `string` | `"elasticache-sg"` | no |
+| <a name="input_elasticache_replication_group_name"></a> [elasticache\_replication\_group\_name](#input\_elasticache\_replication\_group\_name) | The name of the ElastiCache replication group used as the Terraform Enterprise Redis cache. | `string` | `"tfe-redis-cache"` | no |
+| <a name="input_elasticache_security_group_name"></a> [elasticache\_security\_group\_name](#input\_elasticache\_security\_group\_name) | The name of the ElastiCache security group. | `string` | `"elasticache-sg"` | no |
+| <a name="input_elasticache_subnet_group_name"></a> [elasticache\_subnet\_group\_name](#input\_elasticache\_subnet\_group\_name) | The name of the ElastiCache subnet group. | `string` | `"elasticache-sg"` | no |
 | <a name="input_lb_name"></a> [lb\_name](#input\_lb\_name) | The name of the application load balancer used to distribute HTTPS traffic across TFE hosts. | `string` | `"tfe-web-alb"` | no |
 | <a name="input_lb_target_group_name"></a> [lb\_target\_group\_name](#input\_lb\_target\_group\_name) | The name of the target group used to direct HTTPS traffic to TFE hosts. | `string` | `"tfe-web-alb-tg"` | no |
 | <a name="input_postgresql_version"></a> [postgresql\_version](#input\_postgresql\_version) | The version of the PostgreSQL engine to deploy. | `string` | `"15.7"` | no |
 | <a name="input_rds_instance_class"></a> [rds\_instance\_class](#input\_rds\_instance\_class) | The instance type (size) of the RDS instance. | `string` | `"db.t3.medium"` | no |
-| <a name="input_rds_instance_master_username"></a> [rds\_instance\_master\_username](#input\_rds\_instance\_master\_username) | The username of the RDS master user. | `string` | `"tfe"` | no |
-| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | The name of the RDS instance used to externalize TFE services. | `string` | `"tfe-postgres-db"` | no |
-| <a name="input_rds_parameter_group_name"></a> [rds\_parameter\_group\_name](#input\_rds\_parameter\_group\_name) | The name of the RDS Parameter Group. | `string` | `"rds-pg"` | no |
-| <a name="input_rds_security_group_name"></a> [rds\_security\_group\_name](#input\_rds\_security\_group\_name) | The name of the RDS Security Group. | `string` | `"rds-sg"` | no |
-| <a name="input_rds_subnet_group_name"></a> [rds\_subnet\_group\_name](#input\_rds\_subnet\_group\_name) | The name of the RDS Subnet Group. | `string` | `"rds-sg"` | no |
+| <a name="input_rds_instance_master_user"></a> [rds\_instance\_master\_user](#input\_rds\_instance\_master\_user) | The RDS master user. | `string` | `"tfeadmin"` | no |
+| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | The name of the RDS instance used to store Terraform Enterprise data in. | `string` | `"tfe-postgres-db"` | no |
+| <a name="input_rds_parameter_group_name"></a> [rds\_parameter\_group\_name](#input\_rds\_parameter\_group\_name) | The name of the RDS parameter group. | `string` | `"rds-pg"` | no |
+| <a name="input_rds_security_group_name"></a> [rds\_security\_group\_name](#input\_rds\_security\_group\_name) | The name of the RDS security group. | `string` | `"rds-sg"` | no |
+| <a name="input_rds_subnet_group_name"></a> [rds\_subnet\_group\_name](#input\_rds\_subnet\_group\_name) | The name of the RDS subnet group. | `string` | `"rds-sg"` | no |
 | <a name="input_redis_version"></a> [redis\_version](#input\_redis\_version) | The version of the Redis engine to deploy. | `string` | `"7.1"` | no |
-| <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | The name of the Route53 Zone used to host TFE. | `string` | `"craig-sloggett.sbx.hashidemos.io"` | no |
-| <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | The name of the S3 VPC Endpoint. | `string` | `"tfe-vpce-s3"` | no |
-| <a name="input_tfe_db_name"></a> [tfe\_db\_name](#input\_tfe\_db\_name) | The name of the database used to store TFE data in. | `string` | `"tfe"` | no |
-| <a name="input_tfe_db_username"></a> [tfe\_db\_username](#input\_tfe\_db\_username) | The username used to access the TFE database. | `string` | `"tfe_user"` | no |
-| <a name="input_tfe_hostname"></a> [tfe\_hostname](#input\_tfe\_hostname) | The hostname of Terraform Enterprise instance. | `string` | `"tfe"` | no |
+| <a name="input_route53_zone_name"></a> [route53\_zone\_name](#input\_route53\_zone\_name) | The name of the Route53 zone used to host Terraform Enterprise. | `string` | n/a | yes |
+| <a name="input_s3_vpc_endpoint_name"></a> [s3\_vpc\_endpoint\_name](#input\_s3\_vpc\_endpoint\_name) | The name of the S3 VPC endpoint. | `string` | `"tfe-vpce-s3"` | no |
+| <a name="input_tfe_database_name"></a> [tfe\_database\_name](#input\_tfe\_database\_name) | The name of the database used to store Terraform Enterprise data in. | `string` | `"tfe"` | no |
+| <a name="input_tfe_database_user"></a> [tfe\_database\_user](#input\_tfe\_database\_user) | The user with access the Terraform Enterprise database. | `string` | `"tfe"` | no |
 | <a name="input_tfe_license"></a> [tfe\_license](#input\_tfe\_license) | The license for Terraform Enterprise. | `string` | n/a | yes |
-| <a name="input_tfe_security_group_name"></a> [tfe\_security\_group\_name](#input\_tfe\_security\_group\_name) | The name of the TFE Hosts Security Group. | `string` | `"tfe-sg"` | no |
+| <a name="input_tfe_security_group_name"></a> [tfe\_security\_group\_name](#input\_tfe\_security\_group\_name) | The name of the Terraform Enterprise EC2 hosts security group. | `string` | `"tfe-sg"` | no |
+| <a name="input_tfe_subdomain"></a> [tfe\_subdomain](#input\_tfe\_subdomain) | The subdomain used for Terraform Enterprise. | `string` | `"tfe"` | no |
 | <a name="input_tfe_version"></a> [tfe\_version](#input\_tfe\_version) | The version of Terraform Enterprise to deploy. | `string` | `"v202401-2"` | no |
-| <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC used to host TFE. | `string` | `"tfe-vpc"` | no |
+| <a name="input_vpc_azs"></a> [vpc\_azs](#input\_vpc\_azs) | A list of availability zone names to deploy to in the region. | `list(string)` | <pre>[<br>  "ca-central-1a",<br>  "ca-central-1b",<br>  "ca-central-1d"<br>]</pre> | no |
+| <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC used to host Terraform Enterprise. | `string` | `"tfe-vpc"` | no |
 
 ## Outputs
 
