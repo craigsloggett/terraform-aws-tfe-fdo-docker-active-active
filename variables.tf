@@ -98,7 +98,7 @@ variable "ec2_tfe_instance_name" {
 variable "ec2_tfe_instance_type" {
   type        = string
   description = "The type (size) of the TFE EC2 instance."
-  default     = "t3a.medium"
+  default     = "t3.medium"
 }
 
 variable "asg_name" {
