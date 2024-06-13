@@ -52,5 +52,18 @@ locals {
   region                    = data.aws_region.current.name
   bucket_name               = "${local.account_id}-${local.region}-terraform-enterprise"
   my_ip                     = chomp(data.http.myip.response_body)
-  route53_alias_record_name = "${var.tfe_hostname}.${var.route53_zone_name}"
+  route53_alias_record_name = "${var.tfe_subdomain}.${var.route53_zone_name}"
+}
+
+resource "random_string" "tfe_encryption_password" {
+  length = 256
+}
+
+resource "random_string" "tfe_database_password" {
+  length = 64
+}
+
+resource "random_string" "tfe_redis_password" {
+  length  = 128
+  special = false # The Redis auth token doesn't accept special characters.
 }

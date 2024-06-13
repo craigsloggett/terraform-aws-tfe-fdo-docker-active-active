@@ -34,19 +34,19 @@ data "aws_iam_policy_document" "tfe_get_parameters" {
       "ssm:GetParametersByPath"
     ]
     resources = [
-      aws_ssm_parameter.tfe_license.arn,
       aws_ssm_parameter.tfe_version.arn,
-      aws_ssm_parameter.tfe_encryption_password.arn,
-      aws_ssm_parameter.tfe_fqdn.arn,
-      aws_ssm_parameter.tfe_db_name.arn,
-      aws_ssm_parameter.tfe_db_username.arn,
-      aws_ssm_parameter.tfe_db_password.arn,
       aws_ssm_parameter.postgresql_major_version.arn,
-      aws_ssm_parameter.rds_fqdn.arn,
-      aws_ssm_parameter.s3_region.arn,
-      aws_ssm_parameter.s3_bucket_id.arn,
-      aws_ssm_parameter.elasticache_fqdn.arn,
-      aws_ssm_parameter.redis_auth_token.arn,
+      aws_ssm_parameter.tfe_encryption_password.arn,
+      aws_ssm_parameter.tfe_hostname.arn,
+      aws_ssm_parameter.tfe_license.arn,
+      aws_ssm_parameter.tfe_database_host.arn,
+      aws_ssm_parameter.tfe_database_name.arn,
+      aws_ssm_parameter.tfe_database_user.arn,
+      aws_ssm_parameter.tfe_database_password.arn,
+      aws_ssm_parameter.tfe_redis_host.arn,
+      aws_ssm_parameter.tfe_redis_password.arn,
+      aws_ssm_parameter.tfe_object_storage_s3_region.arn,
+      aws_ssm_parameter.tfe_object_storage_s3_bucket.arn,
     ]
   }
 }
