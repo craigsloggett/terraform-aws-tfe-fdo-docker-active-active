@@ -16,7 +16,7 @@ resource "aws_ssm_parameter" "postgresql_major_version" {
 
 # The Admin Token URL is populated by the Terraform Enterprise application on startup.
 resource "aws_ssm_parameter" "tfe_admin_token_url" {
-  name        = "/TFE/Admin-Token-URL"
+  name        = "/TFE/TFE_ADMIN_TOKEN_URL"
   description = "Terraform Enterprise Admin Token URL"
   type        = "SecureString"
   key_id      = data.aws_kms_key.ssm.id

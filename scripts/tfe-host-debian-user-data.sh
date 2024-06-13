@@ -420,7 +420,7 @@ EOF
   wait_for_tfe_nodes
 
   # Put the Admin Token URL in the Parameter Store for convenience.
-  set_ssm_parameter_value "/TFE/Admin-Token-URL" "$(get_tfe_admin_token_url)"
+  set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "$(get_tfe_admin_token_url)"
 }
 
 main "$@"
