@@ -142,7 +142,7 @@ resource "aws_lb_target_group" "tfe" {
     healthy_threshold   = 2
     unhealthy_threshold = 10
     timeout             = 5
-    interval            = 45
+    interval            = 60
     matcher             = 200
   }
 }
