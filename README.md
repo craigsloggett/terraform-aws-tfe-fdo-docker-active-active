@@ -111,7 +111,6 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/kms_key) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/region) | data source |
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/route53_zone) | data source |
-| [aws_secretsmanager_secret_version.master_user_secret](https://registry.terraform.io/providers/hashicorp/aws/5.53.0/docs/data-sources/secretsmanager_secret_version) | data source |
 | [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/3.4.3/docs/data-sources/http) | data source |
 
 ## Inputs
