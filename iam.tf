@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "tfe_get_parameters" {
 }
 
 resource "aws_iam_policy" "tfe_get_parameters" {
-  name   = "GetTerraformEnterpriseSystemsManagerParameters"
+  name   = "SSMReadTerraformEnterpriseParameters"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_get_parameters.json
 }
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "tfe_put_parameters" {
 }
 
 resource "aws_iam_policy" "tfe_put_parameters" {
-  name   = "PutTerraformEnterpriseSystemsManagerParameters"
+  name   = "SSMWriteTerraformEnterpriseAdminTokenURLParameter"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_put_parameters.json
 }
@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "tfe_secrets_manager" {
 }
 
 resource "aws_iam_policy" "tfe_secrets_manager" {
-  name   = "ReadTerraformEnterpriseSecretsManagerSecrets"
+  name   = "SecretsManagerReadTerraformEnterpriseSecrets"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_secrets_manager.json
 }
@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "tfe_s3" {
 }
 
 resource "aws_iam_policy" "tfe_s3" {
-  name   = "FullTerraformEnterpriseS3Bucket"
+  name   = "S3WriteTerraformEnterpriseBucket"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_s3.json
 }
