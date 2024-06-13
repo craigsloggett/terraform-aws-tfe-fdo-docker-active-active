@@ -86,7 +86,7 @@ variable "ec2_bastion_instance_name" {
 variable "ec2_bastion_instance_type" {
   type        = string
   description = "The type (size) of the Bastion EC2 instance."
-  default     = "t3a.nano"
+  default     = "t3.nano"
 }
 
 variable "ec2_tfe_instance_name" {

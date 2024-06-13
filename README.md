@@ -123,13 +123,13 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_asg_min_size"></a> [asg\_min\_size](#input\_asg\_min\_size) | The minimum number of hosts allowed in the TFE auto scaling group. | `number` | `0` | no |
 | <a name="input_asg_name"></a> [asg\_name](#input\_asg\_name) | The name of the ASG for the TFE hosts. | `string` | `"tfe-asg"` | no |
 | <a name="input_ec2_bastion_instance_name"></a> [ec2\_bastion\_instance\_name](#input\_ec2\_bastion\_instance\_name) | The name of the Bastion EC2 instance. | `string` | `"Bastion Host"` | no |
-| <a name="input_ec2_bastion_instance_type"></a> [ec2\_bastion\_instance\_type](#input\_ec2\_bastion\_instance\_type) | The type (size) of the Bastion EC2 instance. | `string` | `"t3a.nano"` | no |
+| <a name="input_ec2_bastion_instance_type"></a> [ec2\_bastion\_instance\_type](#input\_ec2\_bastion\_instance\_type) | The type (size) of the Bastion EC2 instance. | `string` | `"t3.nano"` | no |
 | <a name="input_ec2_bastion_security_group_name"></a> [ec2\_bastion\_security\_group\_name](#input\_ec2\_bastion\_security\_group\_name) | The name of the EC2 Bastion Host Security Group. | `string` | `"ec2-bastion-sg"` | no |
 | <a name="input_ec2_bastion_ssh_public_key"></a> [ec2\_bastion\_ssh\_public\_key](#input\_ec2\_bastion\_ssh\_public\_key) | The SSH public key used to authenticate to the Bastion EC2 instance. | `string` | n/a | yes |
 | <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM Role assigned to the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-iam-role"` | no |
 | <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 Instance Profile assigned to the TFE hosts. | `string` | `"tfe-instance-profile"` | no |
 | <a name="input_ec2_tfe_instance_name"></a> [ec2\_tfe\_instance\_name](#input\_ec2\_tfe\_instance\_name) | The name of the TFE EC2 instance. | `string` | `"TFE Host"` | no |
-| <a name="input_ec2_tfe_instance_type"></a> [ec2\_tfe\_instance\_type](#input\_ec2\_tfe\_instance\_type) | The type (size) of the TFE EC2 instance. | `string` | `"t3a.medium"` | no |
+| <a name="input_ec2_tfe_instance_type"></a> [ec2\_tfe\_instance\_type](#input\_ec2\_tfe\_instance\_type) | The type (size) of the TFE EC2 instance. | `string` | `"t3.medium"` | no |
 | <a name="input_elasticache_node_type"></a> [elasticache\_node\_type](#input\_elasticache\_node\_type) | The node type (size) of the ElastiCache nodes. | `string` | `"cache.t3.medium"` | no |
 | <a name="input_elasticache_replication_group_name"></a> [elasticache\_replication\_group\_name](#input\_elasticache\_replication\_group\_name) | The name of the ElastiCache replication group used as the TFE Redis cache. | `string` | `"tfe-redis-cache"` | no |
 | <a name="input_elasticache_security_group_name"></a> [elasticache\_security\_group\_name](#input\_elasticache\_security\_group\_name) | The name of the ElastiCache Security Group. | `string` | `"elasticache-sg"` | no |
@@ -138,7 +138,7 @@ Infrastructure as Code Repository to Standup TFE
 | <a name="input_lb_target_group_name"></a> [lb\_target\_group\_name](#input\_lb\_target\_group\_name) | The name of the target group used to direct HTTPS traffic to TFE hosts. | `string` | `"tfe-web-alb-tg"` | no |
 | <a name="input_postgresql_version"></a> [postgresql\_version](#input\_postgresql\_version) | The version of the PostgreSQL engine to deploy. | `string` | `"15.7"` | no |
 | <a name="input_rds_instance_class"></a> [rds\_instance\_class](#input\_rds\_instance\_class) | The instance type (size) of the RDS instance. | `string` | `"db.t3.medium"` | no |
-| <a name="input_rds_instance_master_username"></a> [rds\_instance\_master\_username](#input\_rds\_instance\_master\_username) | The username of the RDS master user. | `string` | `"admin"` | no |
+| <a name="input_rds_instance_master_user"></a> [rds\_instance\_master\_user](#input\_rds\_instance\_master\_user) | The RDS master user. | `string` | `"tfeadmin"` | no |
 | <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | The name of the RDS instance used to externalize TFE services. | `string` | `"tfe-postgres-db"` | no |
 | <a name="input_rds_parameter_group_name"></a> [rds\_parameter\_group\_name](#input\_rds\_parameter\_group\_name) | The name of the RDS Parameter Group. | `string` | `"rds-pg"` | no |
 | <a name="input_rds_security_group_name"></a> [rds\_security\_group\_name](#input\_rds\_security\_group\_name) | The name of the RDS Security Group. | `string` | `"rds-sg"` | no |
