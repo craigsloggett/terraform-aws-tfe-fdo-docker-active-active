@@ -1,4 +1,5 @@
 # Required
+
 tfe_license                = "NICETRY"
 route53_zone_name          = "craig-sloggett.sbx.hashidemos.io"
 ec2_bastion_ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILospQ0z+2yER9Q7Jh+4X91IRU+FzztRbkYg5t9C0B6o"
