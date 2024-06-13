@@ -25,12 +25,6 @@ variable "tfe_version" {
   default     = "v202401-2"
 }
 
-variable "tfe_database_user" {
-  type        = string
-  description = "The user with access the TFE database."
-  default     = "tfe"
-}
-
 # VPC
 
 variable "vpc_name" {
@@ -157,6 +151,12 @@ variable "tfe_database_name" {
   default     = "tfe"
 }
 
+variable "tfe_database_user" {
+  type        = string
+  description = "The user with access the TFE database."
+  default     = "tfe"
+}
+
 variable "rds_instance_name" {
   type        = string
   description = "The name of the RDS instance used to externalize TFE services."
@@ -169,10 +169,10 @@ variable "rds_instance_class" {
   default     = "db.t3.medium"
 }
 
-variable "rds_instance_master_username" {
+variable "rds_instance_master_user" {
   type        = string
-  description = "The username of the RDS master user."
-  default     = "admin"
+  description = "The RDS master user."
+  default     = "tfeadmin"
 }
 
 variable "rds_subnet_group_name" {

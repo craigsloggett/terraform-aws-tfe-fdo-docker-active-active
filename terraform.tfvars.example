@@ -7,7 +7,6 @@ ec2_bastion_ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILospQ0z+2yER9
 
 # Terraform Enterprise
 tfe_version       = "v202401-2"
-tfe_database_user = "tfe"
 
 # VPC
 vpc_name                        = "tfe-vpc"
@@ -32,13 +31,14 @@ lb_name                   = "tfe-web-alb"
 lb_target_group_name      = "tfe-web-alb-tg"
 
 # RDS
-postgresql_version           = "15.7"
-tfe_database_name            = "tfe"
-rds_instance_name            = "tfe-postgres-db"
-rds_instance_class           = "db.t3.medium"
-rds_instance_master_username = "admin"
-rds_subnet_group_name        = "rds-sg"
-rds_parameter_group_name     = "rds-pg"
+postgresql_version       = "15.7"
+tfe_database_name        = "tfe"
+tfe_database_user        = "tfe"
+rds_instance_name        = "tfe-postgres-db"
+rds_instance_class       = "db.t3.medium"
+rds_instance_master_user = "tfeadmin"
+rds_subnet_group_name    = "rds-sg"
+rds_parameter_group_name = "rds-pg"
 
 # ElastiCache
 redis_version                      = "7.1"

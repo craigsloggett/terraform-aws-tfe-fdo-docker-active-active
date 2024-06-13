@@ -32,7 +32,7 @@ resource "aws_db_instance" "tfe" {
   engine_version                  = var.postgresql_version
   instance_class                  = var.rds_instance_class
   db_name                         = var.tfe_database_name
-  username                        = var.rds_instance_master_username
+  username                        = var.rds_instance_master_user
   db_subnet_group_name            = aws_db_subnet_group.tfe.name
   vpc_security_group_ids          = [aws_security_group.rds.id]
   multi_az                        = true
