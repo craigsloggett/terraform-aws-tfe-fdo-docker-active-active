@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "tfe_s3" {
       "s3:ListBucket"
     ]
     resources = [
-      "${aws_s3_bucket.tfe.arn}/*"
+      aws_s3_bucket.tfe.arn
     ]
   }
   statement {
