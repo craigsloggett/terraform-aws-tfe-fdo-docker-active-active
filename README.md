@@ -8,7 +8,7 @@ Infrastructure as Code Repository to Standup TFE
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.67.0 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | 3.4.4 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | 3.4.5 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.2 |
 
 ## Providers
@@ -16,7 +16,7 @@ Infrastructure as Code Repository to Standup TFE
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 5.67.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | 3.4.4 |
+| <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
 
 ## Modules
@@ -114,7 +114,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/5.67.0/docs/data-sources/kms_key) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/5.67.0/docs/data-sources/region) | data source |
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.67.0/docs/data-sources/route53_zone) | data source |
-| [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/3.4.4/docs/data-sources/http) | data source |
+| [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/3.4.5/docs/data-sources/http) | data source |
 
 ## Inputs
 
