@@ -40,7 +40,7 @@ jobs:
             jq '[ .check_runs[] | select(.conclusion=="failure" and .name!="Terraform Docs") ] | length')"
 
           if [ "${failed_checks}" -ne 0 ]; then
-            echo "::error title=Verify Checks::Pull request checks have failed for this commit, unable to automatically merge the Dependabot changes."
+            echo "::error::Pull request checks have failed for this commit, unable to automatically merge the Dependabot changes."
             exit 1
           else
             exit 0
