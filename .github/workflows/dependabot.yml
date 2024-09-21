@@ -12,10 +12,6 @@ jobs:
     runs-on: ubuntu-22.04
     # if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
-      - name: Get Dependabot Metadata
-        uses: dependabot/fetch-metadata@dbb049abf0d677abbd7f7eee0375145b417fdd34 # v2.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Enable auto-merge
         run: gh pr merge --auto --squash "${PR_URL}"
         env:
