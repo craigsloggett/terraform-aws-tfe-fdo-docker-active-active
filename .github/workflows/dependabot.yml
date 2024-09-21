@@ -15,6 +15,8 @@ jobs:
       - name: Verify Checks
         run: |
           # DEBUG
+          incomplete_check_runs=1
+
           while [ "${incomplete_check_runs}" -ne 0 ]; do
             incomplete_check_runs="$(curl -L -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${GH_TOKEN}" \
