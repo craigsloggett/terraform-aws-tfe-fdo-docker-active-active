@@ -34,25 +34,25 @@ data "aws_iam_policy_document" "tfe_get_parameters" {
       "ssm:GetParametersByPath"
     ]
     resources = [
-      aws_ssm_parameter.tfe_license.arn,
       aws_ssm_parameter.tfe_version.arn,
-      aws_ssm_parameter.tfe_encryption_password.arn,
-      aws_ssm_parameter.tfe_fqdn.arn,
-      aws_ssm_parameter.tfe_db_name.arn,
-      aws_ssm_parameter.tfe_db_username.arn,
-      aws_ssm_parameter.tfe_db_password.arn,
       aws_ssm_parameter.postgresql_major_version.arn,
-      aws_ssm_parameter.rds_fqdn.arn,
-      aws_ssm_parameter.s3_region.arn,
-      aws_ssm_parameter.s3_bucket_id.arn,
-      aws_ssm_parameter.elasticache_fqdn.arn,
-      aws_ssm_parameter.redis_auth_token.arn,
+      aws_ssm_parameter.tfe_encryption_password.arn,
+      aws_ssm_parameter.tfe_hostname.arn,
+      aws_ssm_parameter.tfe_license.arn,
+      aws_ssm_parameter.tfe_database_host.arn,
+      aws_ssm_parameter.tfe_database_name.arn,
+      aws_ssm_parameter.tfe_database_user.arn,
+      aws_ssm_parameter.tfe_database_password.arn,
+      aws_ssm_parameter.tfe_redis_host.arn,
+      aws_ssm_parameter.tfe_redis_password.arn,
+      aws_ssm_parameter.tfe_object_storage_s3_region.arn,
+      aws_ssm_parameter.tfe_object_storage_s3_bucket.arn,
     ]
   }
 }
 
 resource "aws_iam_policy" "tfe_get_parameters" {
-  name   = "GetTerraformEnterpriseSystemsManagerParameters"
+  name   = "SSMReadTerraformEnterpriseParameters"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_get_parameters.json
 }
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "tfe_put_parameters" {
 }
 
 resource "aws_iam_policy" "tfe_put_parameters" {
-  name   = "PutTerraformEnterpriseSystemsManagerParameters"
+  name   = "SSMWriteTerraformEnterpriseAdminTokenURLParameter"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_put_parameters.json
 }
@@ -99,7 +99,7 @@ data "aws_iam_policy_document" "tfe_secrets_manager" {
       "secretsmanager:ListSecretVersionIds"
     ]
     resources = [
-      data.aws_secretsmanager_secret_version.master_user_secret.arn,
+      aws_db_instance.tfe.master_user_secret[0].secret_arn
     ]
   }
   statement {
@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "tfe_secrets_manager" {
 }
 
 resource "aws_iam_policy" "tfe_secrets_manager" {
-  name   = "ReadTerraformEnterpriseSecretsManagerSecrets"
+  name   = "SecretsManagerReadTerraformEnterpriseSecrets"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_secrets_manager.json
 }
@@ -128,16 +128,25 @@ data "aws_iam_policy_document" "tfe_s3" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:*"
+      "s3:ListBucket"
     ]
     resources = [
       aws_s3_bucket.tfe.arn
     ]
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:*Object"
+    ]
+    resources = [
+      "${aws_s3_bucket.tfe.arn}/*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "tfe_s3" {
-  name   = "FullTerraformEnterpriseS3Bucket"
+  name   = "S3WriteTerraformEnterpriseBucket"
   path   = "/"
   policy = data.aws_iam_policy_document.tfe_s3.json
 }

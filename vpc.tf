@@ -1,11 +1,11 @@
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.8.1"
+  version = "5.13.0"
 
   name = var.vpc_name
   cidr = "10.0.0.0/16"
 
-  azs             = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
+  azs             = var.vpc_azs
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
@@ -51,12 +51,12 @@ resource "aws_vpc_endpoint_route_table_association" "private" {
 # Bastion Security Group
 
 resource "aws_security_group" "bastion" {
-  name        = var.bastion_security_group_name
+  name        = var.ec2_bastion_security_group_name
   description = "Bastion Host Security Group"
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = var.bastion_security_group_name
+    Name = var.ec2_bastion_security_group_name
   }
 }
 
@@ -109,6 +109,17 @@ resource "aws_vpc_security_group_ingress_rule" "tfe_ssh" {
   from_port   = 22
   to_port     = 22
 }
+
+resource "aws_vpc_security_group_ingress_rule" "tfe_vault" {
+  security_group_id = aws_security_group.tfe.id
+  description       = "Allow Vault traffic ingress to the TFE Hosts from private subnets."
+
+  cidr_ipv4   = "10.0.0.0/16"
+  ip_protocol = "tcp"
+  from_port   = 8201
+  to_port     = 8201
+}
+
 
 resource "aws_vpc_security_group_egress_rule" "tfe" {
   security_group_id = aws_security_group.tfe.id
