@@ -18,11 +18,11 @@ jobs:
           incomplete_check_runs=1
 
           while [ "${incomplete_check_runs}" -ne 0 ]; do
-            incomplete_check_runs="$(curl -L -H "Accept: application/vnd.github+json" \
+            incomplete_check_runs="$(curl --silent -L -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
               https://api.github.com/repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs |
-              jq '[ .check_runs[] | select(.status!="completed") ] | length')"
+              jq '[ .check_runs[] | select(.status!="completed" and .name!="Verify Checks") ] | length')"
 
             sleep 5
           done
