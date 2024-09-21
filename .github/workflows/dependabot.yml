@@ -21,6 +21,7 @@ jobs:
         with:
           git-push: true
           git-commit-message: 'docs: Update README.md'
+          git-push-sign-off: true
   manage-pull-request:
     name: Manage Pull Request
     runs-on: ubuntu-22.04
