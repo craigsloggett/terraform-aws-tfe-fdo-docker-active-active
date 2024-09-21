@@ -24,7 +24,7 @@ data "aws_ec2_instance_type_offering" "bastion" {
   location_type = "availability-zone"
 }
 
-data "aws_ec2_instance_type_offering" "tfe" {
+data "aws_ec2_instance_type_offering" "tfe-92992" {
   for_each = toset(data.aws_availability_zones.all.names)
 
   filter {
