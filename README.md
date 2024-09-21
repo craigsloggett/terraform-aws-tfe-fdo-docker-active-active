@@ -15,7 +15,7 @@ Infrastructure as Code Repository to Standup TFE
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.68.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.67.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
 
