@@ -15,7 +15,7 @@ Infrastructure as Code Repository to Standup TFE
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.68.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
 
@@ -102,7 +102,7 @@ Infrastructure as Code Repository to Standup TFE
 | [aws_availability_zones.all](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/caller_identity) | data source |
 | [aws_ec2_instance_type_offering.bastion](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/ec2_instance_type_offering) | data source |
-| [aws_ec2_instance_type_offering.tfe-92992](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/ec2_instance_type_offering) | data source |
+| [aws_ec2_instance_type_offering.tfe](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/ec2_instance_type_offering) | data source |
 | [aws_iam_policy_document.ec2_modify_metadata](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_assume_role](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.tfe_get_parameters](https://registry.terraform.io/providers/hashicorp/aws/5.68.0/docs/data-sources/iam_policy_document) | data source |
