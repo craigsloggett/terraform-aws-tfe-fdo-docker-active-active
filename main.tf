@@ -8,7 +8,7 @@ data "aws_route53_zone" "tfe" {
 
 data "aws_availability_zones" "all" {}
 
-data "aws_ec2_instance_type_offering" "bastion-290823jc" {
+data "aws_ec2_instance_type_offering" "bastion" {
   for_each = toset(data.aws_availability_zones.all.names)
 
   filter {
