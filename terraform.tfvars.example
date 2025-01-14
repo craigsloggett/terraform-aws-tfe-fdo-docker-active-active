@@ -7,7 +7,7 @@ ec2_bastion_ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILospQ0z+2yER9
 # Optional
 
 # Terraform Enterprise
-tfe_version       = "v202409-2"
+tfe_version = "v202411-2"
 
 # VPC
 vpc_name                        = "tfe-vpc"
@@ -21,7 +21,7 @@ elasticache_security_group_name = "elasticache-sg"
 
 # EC2
 ec2_bastion_instance_name = "Bastion Host"
-ec2_bastion_instance_type = "t3a.nano"
+ec2_bastion_instance_type = "t3.nano"
 ec2_tfe_instance_name     = "TFE Host"
 ec2_tfe_instance_type     = "t3.medium"
 asg_name                  = "tfe-asg"
