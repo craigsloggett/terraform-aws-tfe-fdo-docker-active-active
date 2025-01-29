@@ -1,5 +1,5 @@
 # tfe-infrastructure
-Infrastructure as Code Repository to Standup TFE
+Deploy Terraform Enterprise on Docker in an active-active setup.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
