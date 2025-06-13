@@ -34,14 +34,16 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - name: Generate Docs
-        uses: terraform-docs/gh-actions@6de6da0cefcc6b4b7a5cbea4d79d97060733093c # v1.4.1
-        with:
-          git-push: true
-          git-commit-message: 'docs: Update README.md'
-          git-push-user-name: Craig Sloggett
-          git-push-user-email: ${{ secrets.USER_EMAIL }}
-          git-push-sign-off: true
+      - name: Update Documentation
+        run: |
+          make docs
+      - name: Commit Changes
+        run: |
+          git config user.name "Craig Sloggett"
+          git config user.email "${{ secrets.USER_EMAIL }}"  # use your GitHub email
+          git add README.md
+          git commit -m "docs: update README.md" || echo "No changes to commit"
+          git push origin HEAD
 # if: github.event.pull_request.user.login == 'dependabot[bot]'
 # if: github.event.pull_request.user.login == 'dependabot[bot]'
 #  manage-pull-request:
