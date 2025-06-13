@@ -1,3 +1,6 @@
+# Local build directories
+.local/*
+
 # Local .terraform directories
 **/.terraform/*
 
