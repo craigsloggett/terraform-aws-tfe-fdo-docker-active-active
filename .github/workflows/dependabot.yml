@@ -10,7 +10,6 @@ jobs:
   verify-checks:
     name: Verify Checks
     runs-on: ubuntu-24.04
-    # if: github.event.pull_request.user.login == 'dependabot[bot]'
     continue-on-error: true
     steps:
       - name: Checkout
@@ -27,7 +26,6 @@ jobs:
     name: Update Documentation
     needs: verify-checks
     runs-on: ubuntu-24.04
-    # if: github.event.pull_request.user.login == 'dependabot[bot]'
     if: needs.verify-checks.result == 'failure'
     steps:
       - name: Checkout
@@ -41,6 +39,8 @@ jobs:
           git-commit-message: 'docs: Update README.md'
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+# if: github.event.pull_request.user.login == 'dependabot[bot]'
+# if: github.event.pull_request.user.login == 'dependabot[bot]'
 #  manage-pull-request:
 #    name: Manage Pull Request
 #    needs: verify-checks
