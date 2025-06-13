@@ -8,7 +8,7 @@ Infrastructure as Code Repository to Standup TFE
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.99.1 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | 3.5.0 |
+| <a name="requirement_http"></a> [http](#requirement\_http) | 3.4.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.7.2 |
 
 ## Providers

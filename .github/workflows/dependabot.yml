@@ -44,6 +44,8 @@ jobs:
           git commit -m "docs: update README.md" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin HEAD
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 # if: github.event.pull_request.user.login == 'dependabot[bot]'
 # if: github.event.pull_request.user.login == 'dependabot[bot]'
 #  manage-pull-request:
