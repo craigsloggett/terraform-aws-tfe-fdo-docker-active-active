@@ -19,7 +19,7 @@ jobs:
       - name: Verify Checks
         run: |
           # Wait for incomplete checks to finish running.
-          gh pr checks --watch
+          gh pr checks --required --watch
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
   terraform-docs:
