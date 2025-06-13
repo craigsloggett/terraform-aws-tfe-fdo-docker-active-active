@@ -9,7 +9,7 @@ permissions:
 jobs:
   verify-checks:
     name: Verify Checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Verify Checks
@@ -49,7 +49,7 @@ jobs:
   terraform-docs:
     name: Update Documentation
     needs: verify-checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Checkout
@@ -64,7 +64,7 @@ jobs:
   manage-pull-request:
     name: Manage Pull Request
     needs: verify-checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - name: Enable auto-merge
