@@ -55,3 +55,5 @@ test: tools
 clean:
 	@echo "Removing the $(BIN) directory..."
 	@rm -rf $(BIN)
+	@echo "Removing the $(PWD)/.local directory..."
+	@rm -rf $(PWD)/.local
