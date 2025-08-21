@@ -83,7 +83,7 @@ data "aws_kms_key" "ssm" {
 
 locals {
   account_id                = data.aws_caller_identity.current.account_id
-  region                    = data.aws_region.current.name
+  region                    = data.aws_region.current.region
   bucket_name               = "${local.account_id}-${local.region}-terraform-enterprise"
   my_ip                     = chomp(data.http.myip.response_body)
   route53_alias_record_name = "${var.tfe_subdomain}.${var.route53_zone_name}"

@@ -110,7 +110,7 @@ resource "aws_ssm_parameter" "tfe_object_storage_s3_region" {
   description = "Terraform Enterprise Object Storage S3 Region"
   type        = "SecureString"
   key_id      = data.aws_kms_key.ssm.id
-  value       = data.aws_region.current.name
+  value       = data.aws_region.current.region
 }
 
 resource "aws_ssm_parameter" "tfe_object_storage_s3_bucket" {
