@@ -45,7 +45,7 @@ lint: tools
 .PHONY: docs
 docs: tools
 	@echo "Generating Docs..."
-	@$(BIN)/./terraform-docs markdown table . --output-file README.md
+	@$(BIN)/./terraform-docs markdown table --indent 2 --output-mode inject --output-file README.md --output-template "<!-- BEGIN_TF_DOCS -->\n{{ .Content }}\n<!-- END_TF_DOCS -->" .
 
 .PHONY: test
 test: tools
