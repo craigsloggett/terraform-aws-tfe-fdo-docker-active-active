@@ -1,6 +1,5 @@
-# Required
-
 tfe_license                = "YOUR_TFE_LICENSE_HERE"
 tfe_version                = "v202507-1"
 route53_zone_name          = "example.com"
 ec2_bastion_ssh_public_key = "ssh-ed25519 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"

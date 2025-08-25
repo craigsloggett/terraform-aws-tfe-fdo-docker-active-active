@@ -74,6 +74,12 @@ variable "elasticache_security_group_name" {
 
 # EC2
 
+variable "ec2_instance_ami_name" {
+  type        = string
+  description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
+  default     = "debian-12-amd64-20250814-2204"
+}
+
 variable "ec2_bastion_instance_name" {
   type        = string
   description = "The name of the Bastion EC2 instance."

@@ -16,7 +16,7 @@ data "aws_ami" "debian" {
 
   filter {
     name   = "name"
-    values = ["debian-12-amd64-*"]
+    values = [var.ec2_instance_ami_name]
   }
 
   filter {
