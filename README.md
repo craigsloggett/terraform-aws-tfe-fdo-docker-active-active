@@ -3,12 +3,74 @@
 Terraform module which deploys Terraform Enterprise to Docker in AWS on EC2 with an `active-active` operational mode configuration.
 
 <!-- BEGIN_TF_DOCS -->
+## Usage
+
+```hcl
+module "tfe" {
+  source = "../"
+
+  # Required
+  tfe_license                = var.tfe_license
+  tfe_version                = var.tfe_version
+  route53_zone_name          = var.route53_zone_name
+  ec2_bastion_ssh_public_key = var.ec2_bastion_ssh_public_key
+  ec2_instance_ami_name      = var.ec2_instance_ami_name
+}
+
+# variables.tf
+
+variable "tfe_license" {
+  type        = string
+  description = "The license for Terraform Enterprise."
+}
+
+variable "tfe_version" {
+  type        = string
+  description = "The version of Terraform Enterprise to deploy."
+}
+
+variable "route53_zone_name" {
+  type        = string
+  description = "The name of the Route53 zone used to host Terraform Enterprise."
+}
+
+variable "ec2_bastion_ssh_public_key" {
+  type        = string
+  description = "The SSH public key used to authenticate to the Bastion EC2 instance."
+}
+
+variable "ec2_instance_ami_name" {
+  type        = string
+  description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
+}
+
+# providers.tf
+
+provider "aws" {
+  region = "ca-central-1"
+}
+
+provider "http" {}
+
+provider "random" {}
+```
+
+```hcl
+# terraform.tfvars
+
+tfe_license                = "YOUR_TFE_LICENSE_HERE"
+tfe_version                = "v202507-1"
+route53_zone_name          = "example.com"
+ec2_bastion_ssh_public_key = "ssh-ed25519 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
+```
+
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.56 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
@@ -16,7 +78,7 @@ Terraform module which deploys Terraform Enterprise to Docker in AWS on EC2 with
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.56 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 

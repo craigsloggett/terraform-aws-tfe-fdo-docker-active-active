@@ -21,5 +21,4 @@ variable "ec2_bastion_ssh_public_key" {
 variable "ec2_instance_ami_name" {
   type        = string
   description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
-  default     = "debian-12-amd64-20250814-2204"
 }
