@@ -2,42 +2,12 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 data "aws_route53_zone" "tfe" {
   name = var.route53_zone_name
-}
-
-data "aws_availability_zones" "all" {}
-
-data "aws_ec2_instance_type_offering" "bastion" {
-  for_each = toset(data.aws_availability_zones.all.names)
-
-  filter {
-    name   = "instance-type"
-    values = [var.ec2_bastion_instance_type]
-  }
-
-  filter {
-    name   = "location"
-    values = [each.value]
-  }
-
-  location_type = "availability-zone"
-}
-
-data "aws_ec2_instance_type_offering" "tfe" {
-  for_each = toset(data.aws_availability_zones.all.names)
-
-  filter {
-    name   = "instance-type"
-    values = [var.ec2_tfe_instance_type]
-  }
-
-  filter {
-    name   = "location"
-    values = [each.value]
-  }
-
-  location_type = "availability-zone"
 }
 
 data "http" "myip" {
@@ -50,7 +20,7 @@ data "aws_ami" "debian" {
 
   filter {
     name   = "name"
-    values = ["debian-12-amd64-*"]
+    values = [var.ec2_instance_ami_name]
   }
 
   filter {

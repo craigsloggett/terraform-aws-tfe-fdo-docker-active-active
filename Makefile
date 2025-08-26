@@ -45,7 +45,7 @@ lint: tools
 .PHONY: docs
 docs: tools
 	@echo "Generating Docs..."
-	@$(BIN)/./terraform-docs markdown table . --output-file README.md
+	@$(BIN)/./terraform-docs markdown table . --output-file README.md --lockfile=false
 
 .PHONY: test
 test: tools

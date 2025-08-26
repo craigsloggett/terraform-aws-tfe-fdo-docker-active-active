@@ -3,6 +3,12 @@
 variable "tfe_license" {
   type        = string
   description = "The license for Terraform Enterprise."
+  sensitive   = true
+}
+
+variable "tfe_version" {
+  type        = string
+  description = "The version of Terraform Enterprise to deploy."
 }
 
 variable "route53_zone_name" {
@@ -17,26 +23,12 @@ variable "ec2_bastion_ssh_public_key" {
 
 # Optional
 
-# Terraform Enterprise
-
-variable "tfe_version" {
-  type        = string
-  description = "The version of Terraform Enterprise to deploy."
-  default     = "v202409-2"
-}
-
 # VPC
 
 variable "vpc_name" {
   type        = string
   description = "The name of the VPC used to host Terraform Enterprise."
   default     = "tfe-vpc"
-}
-
-variable "vpc_azs" {
-  type        = list(string)
-  description = "A list of availability zone names to deploy to in the region."
-  default     = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
 }
 
 variable "s3_vpc_endpoint_name" {
@@ -76,6 +68,12 @@ variable "elasticache_security_group_name" {
 }
 
 # EC2
+
+variable "ec2_instance_ami_name" {
+  type        = string
+  description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
+  default     = "debian-12-amd64-20250814-2204"
+}
 
 variable "ec2_bastion_instance_name" {
   type        = string
