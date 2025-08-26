@@ -3,6 +3,7 @@
 variable "tfe_license" {
   type        = string
   description = "The license for Terraform Enterprise."
+  sensitive   = true
 }
 
 variable "tfe_version" {
@@ -28,12 +29,6 @@ variable "vpc_name" {
   type        = string
   description = "The name of the VPC used to host Terraform Enterprise."
   default     = "tfe-vpc"
-}
-
-variable "vpc_azs" {
-  type        = list(string)
-  description = "A list of availability zone names to deploy to in the region."
-  default     = ["ca-central-1a", "ca-central-1b", "ca-central-1d"]
 }
 
 variable "s3_vpc_endpoint_name" {
