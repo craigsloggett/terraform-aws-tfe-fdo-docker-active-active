@@ -1,6 +1,6 @@
 # Terraform Enterprise Deployment Module
 
-Terraform module which deploys Terraform Enterprise to Docker in AWS on EC2 with an `active-active` operational mode configuration.
+Terraform module which deploys Terraform Enterprise to Docker in AWS on EC2 with an active-active operational mode configuration.
 
 <!-- BEGIN_TF_DOCS -->
 ## Usage
@@ -232,4 +232,3 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 | <a name="output_tfe_hostname"></a> [tfe\_hostname](#output\_tfe\_hostname) | Fully qualified domain name (FQDN) of the Terraform Enterprise endpoint. |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | ID of the VPC that hosts Terraform Enterprise. |
 <!-- END_TF_DOCS -->
-
