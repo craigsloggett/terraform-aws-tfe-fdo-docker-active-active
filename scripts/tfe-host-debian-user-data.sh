@@ -176,19 +176,8 @@ main() {
   log "Setting up the PostgreSQL client."
 
   # Setup Postgres' APT repository.
-  curl -fsSL "https://www.postgresql.org/media/keys/ACCC4CF8.asc" |
-    gpg --yes --dearmor -o "/usr/share/keyrings/postgresql.gpg"
-
-  chmod a+r /usr/share/keyrings/postgresql.gpg
-
-  cat <<'EOF' >/etc/apt/sources.list.d/postgresql.sources
-Types: deb
-URIs: https://apt.postgresql.org/pub/repos/apt
-Suites: bookworm-pgdg
-Components: main
-arch: amd64
-signed-by: /usr/share/keyrings/postgresql.gpg
-EOF
+  install_packages "postgresql-common"
+  /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 
   # Install the PostgreSQL CLI tool.
   install_packages "postgresql-client-${postgresql_major_version}"
