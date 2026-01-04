@@ -18,7 +18,17 @@ variable "ec2_bastion_ssh_public_key" {
   description = "The SSH public key used to authenticate to the Bastion EC2 instance."
 }
 
+variable "ec2_bastion_allowed_ips" {
+  type        = set(string)
+  description = "A list of IPs that are allowed to access the bastion host."
+}
+
 variable "ec2_instance_ami_name" {
   type        = string
   description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
+}
+
+variable "postgresql_version" {
+  type        = string
+  description = "The version of the PostgreSQL engine to deploy."
 }

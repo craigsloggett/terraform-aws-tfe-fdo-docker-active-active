@@ -61,10 +61,11 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
+  for_each          = var.ec2_bastion_allowed_ips
   security_group_id = aws_security_group.bastion.id
   description       = "Allow SSH traffic ingress to the Bastion Host from a single IP."
 
-  cidr_ipv4   = "${local.my_ip}/32"
+  cidr_ipv4   = "${each.key}/32"
   ip_protocol = "tcp"
   from_port   = 22
   to_port     = 22

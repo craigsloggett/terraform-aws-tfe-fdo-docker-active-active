@@ -1,5 +1,7 @@
 tfe_license                = "YOUR_TFE_LICENSE_HERE"
-tfe_version                = "v202507-1"
-route53_zone_name          = "example.com"
-ec2_bastion_ssh_public_key = "ssh-ed25519 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
+tfe_version                = "1.1.2"
+route53_zone_name          = "tfe.example.com"
+ec2_bastion_ssh_public_key = "ssh-ed25519 YOUR_PUBLIC_SSH_KEY_HERE"
+ec2_bastion_allowed_ips    = ["110.120.130.140"]
+ec2_instance_ami_name      = "debian-13-amd64-20251117-2299"
+postgresql_version         = "17.7"

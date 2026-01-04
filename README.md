@@ -14,7 +14,9 @@ module "tfe" {
   tfe_version                = var.tfe_version
   route53_zone_name          = var.route53_zone_name
   ec2_bastion_ssh_public_key = var.ec2_bastion_ssh_public_key
+  ec2_bastion_allowed_ips    = var.ec2_bastion_allowed_ips
   ec2_instance_ami_name      = var.ec2_instance_ami_name
+  postgresql_version         = var.postgresql_version
 }
 
 # variables.tf
@@ -39,9 +41,19 @@ variable "ec2_bastion_ssh_public_key" {
   description = "The SSH public key used to authenticate to the Bastion EC2 instance."
 }
 
+variable "ec2_bastion_allowed_ips" {
+  type        = set(string)
+  description = "A list of IPs that are allowed to access the bastion host."
+}
+
 variable "ec2_instance_ami_name" {
   type        = string
   description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
+}
+
+variable "postgresql_version" {
+  type        = string
+  description = "The version of the PostgreSQL engine to deploy."
 }
 
 # providers.tf
@@ -50,8 +62,6 @@ provider "aws" {
   region = "ca-central-1"
 }
 
-provider "http" {}
-
 provider "random" {}
 ```
 
@@ -59,10 +69,12 @@ provider "random" {}
 # terraform.tfvars
 
 tfe_license                = "YOUR_TFE_LICENSE_HERE"
-tfe_version                = "v202507-1"
-route53_zone_name          = "example.com"
-ec2_bastion_ssh_public_key = "ssh-ed25519 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
+tfe_version                = "1.1.2"
+route53_zone_name          = "tfe.example.com"
+ec2_bastion_ssh_public_key = "ssh-ed25519 YOUR_PUBLIC_SSH_KEY_HERE"
+ec2_bastion_allowed_ips    = ["110.120.130.140"]
+ec2_instance_ami_name      = "debian-13-amd64-20251117-2299"
+postgresql_version         = "17.7"
 ```
 
 ## Requirements
@@ -71,7 +83,6 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
 ## Providers
@@ -79,7 +90,6 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | >= 3.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
 ## Modules
@@ -177,7 +187,6 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 | [aws_kms_key.ssm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_key) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [aws_route53_zone.tfe](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
-| [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 
@@ -188,12 +197,13 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 | <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | The maximum number of hosts allowed in the TFE auto scaling group. | `number` | `2` | no |
 | <a name="input_asg_min_size"></a> [asg\_min\_size](#input\_asg\_min\_size) | The minimum number of hosts allowed in the TFE auto scaling group. | `number` | `0` | no |
 | <a name="input_asg_name"></a> [asg\_name](#input\_asg\_name) | The name of the ASG for the TFE hosts. | `string` | `"tfe-asg"` | no |
+| <a name="input_ec2_bastion_allowed_ips"></a> [ec2\_bastion\_allowed\_ips](#input\_ec2\_bastion\_allowed\_ips) | A list of IPs that are allowed to access the bastion host. | `set(string)` | n/a | yes |
 | <a name="input_ec2_bastion_instance_name"></a> [ec2\_bastion\_instance\_name](#input\_ec2\_bastion\_instance\_name) | The name of the Bastion EC2 instance. | `string` | `"Bastion Host"` | no |
 | <a name="input_ec2_bastion_instance_type"></a> [ec2\_bastion\_instance\_type](#input\_ec2\_bastion\_instance\_type) | The type (size) of the Bastion EC2 instance. | `string` | `"t3.nano"` | no |
 | <a name="input_ec2_bastion_security_group_name"></a> [ec2\_bastion\_security\_group\_name](#input\_ec2\_bastion\_security\_group\_name) | The name of the EC2 Bastion Host security group. | `string` | `"ec2-bastion-sg"` | no |
 | <a name="input_ec2_bastion_ssh_public_key"></a> [ec2\_bastion\_ssh\_public\_key](#input\_ec2\_bastion\_ssh\_public\_key) | The SSH public key used to authenticate to the Bastion EC2 instance. | `string` | n/a | yes |
 | <a name="input_ec2_iam_role_name"></a> [ec2\_iam\_role\_name](#input\_ec2\_iam\_role\_name) | The name of the IAM role assigned to the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-iam-role"` | no |
-| <a name="input_ec2_instance_ami_name"></a> [ec2\_instance\_ami\_name](#input\_ec2\_instance\_ami\_name) | The name of the AMI used as a filter for both bastion and TFE EC2 instances. | `string` | `"debian-12-amd64-20250814-2204"` | no |
+| <a name="input_ec2_instance_ami_name"></a> [ec2\_instance\_ami\_name](#input\_ec2\_instance\_ami\_name) | The name of the AMI used as a filter for both bastion and TFE EC2 instances. | `string` | `"debian-13-amd64-20251117-2299"` | no |
 | <a name="input_ec2_instance_profile_name"></a> [ec2\_instance\_profile\_name](#input\_ec2\_instance\_profile\_name) | The name of the EC2 instance profile assigned to the Terraform Enterprise hosts. | `string` | `"tfe-instance-profile"` | no |
 | <a name="input_ec2_tfe_instance_name"></a> [ec2\_tfe\_instance\_name](#input\_ec2\_tfe\_instance\_name) | The name of the TFE EC2 instance. | `string` | `"TFE Host"` | no |
 | <a name="input_ec2_tfe_instance_type"></a> [ec2\_tfe\_instance\_type](#input\_ec2\_tfe\_instance\_type) | The type (size) of the TFE EC2 instance. | `string` | `"t3.medium"` | no |
@@ -203,7 +213,7 @@ ec2_instance_ami_name      = "debian-12-amd64-20250814-2204"
 | <a name="input_elasticache_subnet_group_name"></a> [elasticache\_subnet\_group\_name](#input\_elasticache\_subnet\_group\_name) | The name of the ElastiCache subnet group. | `string` | `"elasticache-sg"` | no |
 | <a name="input_lb_name"></a> [lb\_name](#input\_lb\_name) | The name of the application load balancer used to distribute HTTPS traffic across TFE hosts. | `string` | `"tfe-web-alb"` | no |
 | <a name="input_lb_target_group_name"></a> [lb\_target\_group\_name](#input\_lb\_target\_group\_name) | The name of the target group used to direct HTTPS traffic to TFE hosts. | `string` | `"tfe-web-alb-tg"` | no |
-| <a name="input_postgresql_version"></a> [postgresql\_version](#input\_postgresql\_version) | The version of the PostgreSQL engine to deploy. | `string` | `"16.4"` | no |
+| <a name="input_postgresql_version"></a> [postgresql\_version](#input\_postgresql\_version) | The version of the PostgreSQL engine to deploy. | `string` | `"16.8"` | no |
 | <a name="input_rds_instance_class"></a> [rds\_instance\_class](#input\_rds\_instance\_class) | The instance type (size) of the RDS instance. | `string` | `"db.t3.medium"` | no |
 | <a name="input_rds_instance_master_user"></a> [rds\_instance\_master\_user](#input\_rds\_instance\_master\_user) | The RDS master user. | `string` | `"tfeadmin"` | no |
 | <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | The name of the RDS instance used to store Terraform Enterprise data in. | `string` | `"tfe-postgres-db"` | no |

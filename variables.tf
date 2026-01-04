@@ -21,6 +21,11 @@ variable "ec2_bastion_ssh_public_key" {
   description = "The SSH public key used to authenticate to the Bastion EC2 instance."
 }
 
+variable "ec2_bastion_allowed_ips" {
+  type        = set(string)
+  description = "A list of IPs that are allowed to access the bastion host."
+}
+
 # Optional
 
 # VPC
@@ -72,7 +77,7 @@ variable "elasticache_security_group_name" {
 variable "ec2_instance_ami_name" {
   type        = string
   description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
-  default     = "debian-12-amd64-20250814-2204"
+  default     = "debian-13-amd64-20251117-2299"
 }
 
 variable "ec2_bastion_instance_name" {
@@ -140,7 +145,7 @@ variable "lb_target_group_name" {
 variable "postgresql_version" {
   type        = string
   description = "The version of the PostgreSQL engine to deploy."
-  default     = "16.4"
+  default     = "16.8"
 }
 
 variable "tfe_database_name" {
