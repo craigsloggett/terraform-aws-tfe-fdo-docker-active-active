@@ -145,7 +145,7 @@ variable "lb_target_group_name" {
 variable "postgresql_version" {
   type        = string
   description = "The version of the PostgreSQL engine to deploy."
-  default     = "18.1"
+  default     = "16.8"
 }
 
 variable "tfe_database_name" {
