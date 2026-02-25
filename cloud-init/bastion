@@ -2,3 +2,11 @@
 
 package_update: true
 package_upgrade: true
+
+runcmd:
+  - mkdir -p /tmp/ssm
+  - curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb -o /tmp/ssm/amazon-ssm-agent.deb
+  - dpkg -i /tmp/ssm/amazon-ssm-agent.deb
+  - systemctl enable amazon-ssm-agent
+  - systemctl restart amazon-ssm-agent
+  - rm -rf /tmp/ssm

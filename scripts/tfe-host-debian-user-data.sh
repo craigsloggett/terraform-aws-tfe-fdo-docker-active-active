@@ -173,6 +173,16 @@ main() {
   upgrade_system
   install_packages apt-transport-https ca-certificates curl gnupg unzip jq
 
+  log "Updating the SSM Agent to the latest version."
+
+  mkdir -p /tmp/ssm
+  curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
+    -o /tmp/ssm/amazon-ssm-agent.deb
+  dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1
+  systemctl enable amazon-ssm-agent
+  systemctl restart amazon-ssm-agent
+  rm -rf /tmp/ssm
+
   log "Setting up the PostgreSQL client."
 
   # Setup Postgres' APT repository.
