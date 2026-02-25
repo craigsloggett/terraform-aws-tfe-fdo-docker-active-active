@@ -156,6 +156,11 @@ resource "aws_iam_role_policy_attachment" "tfe_s3" {
   policy_arn = aws_iam_policy.tfe_s3.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ssm_managed_instance_core" {
+  role       = aws_iam_role.tfe.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # Create an EC2 instance profile using the TFE role.
 
 data "aws_iam_policy_document" "tfe_assume_role" {

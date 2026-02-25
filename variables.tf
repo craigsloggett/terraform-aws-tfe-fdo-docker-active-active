@@ -18,7 +18,12 @@ variable "tfe_license" {
 
 variable "tfe_version" {
   type        = string
-  description = "The version of Terraform Enterprise to deploy."
+  description = "The version of Terraform Enterprise to deploy. Must include the 'v' prefix (e.g. 'v202505-1')."
+
+  validation {
+    condition     = can(regex("^v[0-9]{6}-[0-9]+$", var.tfe_version))
+    error_message = "tfe_version must be in the format 'v<YYYYMM>-<patch>' (e.g. 'v202505-1')."
+  }
 }
 
 variable "route53_zone_name" {
