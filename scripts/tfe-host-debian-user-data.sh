@@ -383,7 +383,7 @@ volumes:
   terraform-enterprise-cache:
 EOF
 
-  log "Pulling Terraform Enterprise ${tfe_version} from the Hashicorp Docker registry."
+  log "Pulling Terraform Enterprise ${tfe_version} from the HashiCorp Docker registry."
 
   printf '%s\n' "${tfe_license}" |
     docker login --username terraform images.releases.hashicorp.com --password-stdin \

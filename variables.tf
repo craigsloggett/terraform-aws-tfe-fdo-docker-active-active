@@ -5,11 +5,6 @@ variable "aws_region" {
   description = "The AWS region to deploy resources into."
 }
 
-variable "environment" {
-  type        = string
-  description = "The environment name (e.g. dev, staging, prod). Used for tagging."
-}
-
 variable "tfe_license" {
   type        = string
   description = "The license for Terraform Enterprise."
