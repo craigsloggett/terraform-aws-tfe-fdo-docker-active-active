@@ -290,5 +290,3 @@ resource "aws_vpc_security_group_egress_rule" "elasticache" {
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
-
-
