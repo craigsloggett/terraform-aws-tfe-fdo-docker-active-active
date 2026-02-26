@@ -34,16 +34,6 @@ variable "route53_zone_name" {
   description = "The name of the Route53 zone used to host Terraform Enterprise."
 }
 
-variable "ec2_bastion_ssh_public_key" {
-  type        = string
-  description = "The SSH public key used to authenticate to the Bastion EC2 instance."
-}
-
-variable "ec2_bastion_allowed_ips" {
-  type        = set(string)
-  description = "A list of IPs that are allowed to access the bastion host."
-}
-
 # Optional
 
 # VPC
