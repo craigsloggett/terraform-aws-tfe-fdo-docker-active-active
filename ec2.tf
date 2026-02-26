@@ -32,7 +32,8 @@ resource "aws_instance" "bastion" {
   }
 
   tags = {
-    Name = var.ec2_bastion_instance_name
+    Name      = var.ec2_bastion_instance_name
+    ManagedBy = "terraform"
   }
 }
 
@@ -79,7 +80,8 @@ resource "aws_launch_template" "tfe" {
     resource_type = "instance"
 
     tags = {
-      Name = var.ec2_tfe_instance_name
+      Name      = var.ec2_tfe_instance_name
+      ManagedBy = "terraform"
     }
   }
 
