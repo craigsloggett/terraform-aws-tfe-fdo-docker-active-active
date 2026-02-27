@@ -10,7 +10,7 @@ data "aws_route53_zone" "tfe" {
   name = var.route53_zone_name
 }
 
-data "aws_ami" "hc-base-ubuntu-2204" {
+data "aws_ami" "hc-base-ubuntu" {
   filter {
     name   = "name"
     values = [var.ec2_instance_ami_name]
