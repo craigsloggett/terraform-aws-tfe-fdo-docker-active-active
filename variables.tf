@@ -8,7 +8,15 @@ variable "tfe_license" {
 
 variable "tfe_version" {
   type        = string
-  description = "The version of Terraform Enterprise to deploy."
+  description = "The version of Terraform Enterprise to deploy. Use 'v<YYYYMM>-<patch>' for legacy releases (e.g. 'v202505-1') or '<major>.<minor>.<patch>' for semantic versioned releases (e.g. '1.2.0')."
+
+  validation {
+    condition = (
+      can(regex("^v[0-9]{6}-[0-9]+$", var.tfe_version)) ||
+      can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.tfe_version))
+    )
+    error_message = "tfe_version must be 'v<YYYYMM>-<patch>' (e.g. 'v202505-1') or '<major>.<minor>.<patch>' without a 'v' prefix (e.g. '1.2.0')."
+  }
 }
 
 variable "route53_zone_name" {
