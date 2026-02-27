@@ -139,8 +139,8 @@ main() {
     c3='\033[m'
   }
 
-  # The default username assigned to UID 1000 in AWS EC2 instances.
-  username="admin"
+  # The default username for Ubuntu EC2 instances.
+  username="ubuntu"
 
   log "Populating configuration variables."
 
@@ -176,7 +176,7 @@ main() {
   log "Updating the SSM Agent to the latest version."
 
   mkdir -p /tmp/ssm
-  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
+  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/ubuntu_amd64/amazon-ssm-agent.deb \
     -o /tmp/ssm/amazon-ssm-agent.deb 2>/dev/null; then
     dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1 || true
     systemctl enable amazon-ssm-agent
@@ -238,15 +238,15 @@ main() {
   log "Setting up Docker."
 
   # Setup Docker's APT repository.
-  curl -fsSL "https://download.docker.com/linux/debian/gpg" |
+  curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" |
     gpg --yes --dearmor -o "/usr/share/keyrings/docker.gpg"
 
   chmod a+r /usr/share/keyrings/docker.gpg
 
   cat <<'EOF' >/etc/apt/sources.list.d/docker.sources
 Types: deb
-URIs: https://download.docker.com/linux/debian
-Suites: bookworm
+URIs: https://download.docker.com/linux/ubuntu
+Suites: jammy
 Components: stable
 arch: amd64
 signed-by: /usr/share/keyrings/docker.gpg

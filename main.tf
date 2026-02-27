@@ -10,29 +10,17 @@ data "aws_route53_zone" "tfe" {
   name = var.route53_zone_name
 }
 
-data "aws_ami" "debian" {
-  most_recent = true
-  owners      = ["136693071363"]
-
+data "aws_ami" "hc-base-ubuntu-2204" {
   filter {
     name   = "name"
     values = [var.ec2_instance_ami_name]
   }
-
   filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    name   = "state"
+    values = ["available"]
   }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
+  most_recent = true
+  owners      = ["888995627335"]
 }
 
 data "aws_kms_key" "rds" {
