@@ -1,5 +1,5 @@
 # provider "aws" {
-#   region = var.aws_region
+#   region = "ca-central-1"
 
 #   default_tags {
 #     tags = {

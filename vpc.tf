@@ -31,7 +31,7 @@ module "vpc" {
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = module.vpc.vpc_id
-  service_name = "com.amazonaws.${var.aws_region}.s3"
+  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 
   tags = {
     Name = var.s3_vpc_endpoint_name
@@ -82,7 +82,7 @@ resource "aws_vpc_security_group_egress_rule" "ssm_endpoints" {
 
 resource "aws_vpc_endpoint" "ssm" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ssm"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ssm"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   security_group_ids  = [aws_security_group.ssm_endpoints.id]
@@ -95,7 +95,7 @@ resource "aws_vpc_endpoint" "ssm" {
 
 resource "aws_vpc_endpoint" "ssmmessages" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ssmmessages"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ssmmessages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   security_group_ids  = [aws_security_group.ssm_endpoints.id]
@@ -108,7 +108,7 @@ resource "aws_vpc_endpoint" "ssmmessages" {
 
 resource "aws_vpc_endpoint" "ec2messages" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ec2messages"
+  service_name        = "com.amazonaws.${data.aws_region.current.name}.ec2messages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   security_group_ids  = [aws_security_group.ssm_endpoints.id]
