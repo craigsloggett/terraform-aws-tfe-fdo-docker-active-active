@@ -10,6 +10,31 @@ data "aws_route53_zone" "tfe" {
   name = var.route53_zone_name
 }
 
+# data "aws_ami" "debian" {
+#   most_recent = true
+#   owners      = ["136693071363"]
+
+#   filter {
+#     name   = "name"
+#     values = [var.ec2_instance_ami_name]
+#   }
+
+#   filter {
+#     name   = "virtualization-type"
+#     values = ["hvm"]
+#   }
+
+#   filter {
+#     name   = "root-device-type"
+#     values = ["ebs"]
+#   }
+
+#   filter {
+#     name   = "architecture"
+#     values = ["x86_64"]
+#   }
+# }
+
 data "aws_ami" "hc-base-ubuntu" {
   filter {
     name   = "name"

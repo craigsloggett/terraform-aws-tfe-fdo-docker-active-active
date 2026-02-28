@@ -5,7 +5,7 @@ resource "aws_launch_template" "tfe" {
   image_id               = data.aws_ami.hc-base-ubuntu.id
   instance_type          = var.ec2_tfe_instance_type
   update_default_version = true
-  user_data              = base64encode(file("${path.module}/scripts/tfe-host-ubuntu-user-data.sh"))
+  user_data              = base64encode(file("${path.module}/scripts/tfe-host-ubuntu-user-data.sh")) # base64encode(file("${path.module}/scripts/tfe-host-debian-user-data.sh"))
 
   monitoring {
     enabled = true

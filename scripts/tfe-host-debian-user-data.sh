@@ -27,19 +27,9 @@ wait_for_network() {
   done
 }
 
-get_ec2_region() {
-  log "  Detecting AWS region from instance metadata."
-  local token
-  token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
-    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  curl -s -H "X-aws-ec2-metadata-token: ${token}" \
-    "http://169.254.169.254/latest/meta-data/placement/region"
-}
-
 get_ssm_parameter_value() {
   log "  Grabbing AWS Systems Manager Parameter Value for: ${1}"
   aws ssm get-parameter \
-    --region "${AWS_DEFAULT_REGION}" \
     --name "${1}" \
     --query "Parameter.Value" \
     --with-decryption \
@@ -49,7 +39,6 @@ get_ssm_parameter_value() {
 set_ssm_parameter_value() {
   log "  Setting AWS Systems Manager Parameter Value for: ${1}"
   aws ssm put-parameter \
-    --region "${AWS_DEFAULT_REGION}" \
     --name "${1}" \
     --value "${2}" \
     --type "SecureString" \
@@ -61,7 +50,6 @@ find_secretsmanager_secret() {
   log "  Looking up an AWS SecretsManager Secret."
   log "    Query: secret name starts with '${1}'"
   aws secretsmanager list-secrets \
-    --region "${AWS_DEFAULT_REGION}" \
     --query "SecretList[?starts_with(Name, '${1}')].Name" \
     --output text
 }
@@ -69,7 +57,6 @@ find_secretsmanager_secret() {
 get_secretsmanager_secret_value() {
   log "  Grabbing AWS SecretsManager Secret value for: ${1}"
   aws secretsmanager get-secret-value \
-    --region "${AWS_DEFAULT_REGION}" \
     --secret-id "${1}" \
     --query SecretString --output text
 }
@@ -93,7 +80,6 @@ set_ec2_http_put_response_hop_limit() {
   log "  Setting the http-put-response-hop-limit to: ${1}"
 
   aws ec2 modify-instance-metadata-options \
-    --region "${AWS_DEFAULT_REGION}" \
     --instance-id "${ec2_instance_id}" \
     --http-tokens required \
     --http-endpoint enabled \
@@ -153,13 +139,8 @@ main() {
     c3='\033[m'
   }
 
-  # The default username for Ubuntu EC2 instances.
-  username="ubuntu"
-
-  # Resolve the AWS region from EC2 instance metadata (IMDSv2) and export it
-  # so that all subsequent AWS CLI calls inherit it without needing ~/.aws/config.
-  export AWS_DEFAULT_REGION
-  AWS_DEFAULT_REGION="$(get_ec2_region)"
+  # The default username assigned to UID 1000 in AWS EC2 instances.
+  username="admin"
 
   log "Populating configuration variables."
 
@@ -195,7 +176,7 @@ main() {
   log "Updating the SSM Agent to the latest version."
 
   mkdir -p /tmp/ssm
-  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/ubuntu_amd64/amazon-ssm-agent.deb \
+  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
     -o /tmp/ssm/amazon-ssm-agent.deb 2>/dev/null; then
     dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1 || true
     systemctl enable amazon-ssm-agent
@@ -257,15 +238,15 @@ main() {
   log "Setting up Docker."
 
   # Setup Docker's APT repository.
-  curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" |
+  curl -fsSL "https://download.docker.com/linux/debian/gpg" |
     gpg --yes --dearmor -o "/usr/share/keyrings/docker.gpg"
 
   chmod a+r /usr/share/keyrings/docker.gpg
 
   cat <<'EOF' >/etc/apt/sources.list.d/docker.sources
 Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: jammy
+URIs: https://download.docker.com/linux/debian
+Suites: bookworm
 Components: stable
 arch: amd64
 signed-by: /usr/share/keyrings/docker.gpg
