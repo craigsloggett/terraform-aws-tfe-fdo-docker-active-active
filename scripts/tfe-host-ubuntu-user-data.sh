@@ -278,10 +278,22 @@ EOF
 net.ipv4.conf.all.forwarding=1
 EOF
 
-  install_packages docker-ce docker-ce-cli
+  install_packages containerd.io docker-ce docker-ce-cli docker-compose-plugin
 
-  # Add the admin user to the docker group (created automatically as part of install).
+  # Add the ubuntu user to the docker group (created automatically as part of install).
   usermod -aG docker "${username}"
+
+  # Wait for the Docker daemon to be fully ready before trying to use it.
+  log "  Waiting for the Docker daemon to be ready."
+  local retries=30
+  while ! docker info >/dev/null 2>&1; do
+    retries=$((retries - 1))
+    if [ "${retries}" -eq 0 ]; then
+      log "ERROR: Docker daemon did not become ready in time."
+      exit 1
+    fi
+    sleep 2
+  done
 
   log "Setting up a TLS certificate."
 
@@ -405,11 +417,9 @@ EOF
   log "Pulling Terraform Enterprise ${tfe_version} from the HashiCorp Docker registry."
 
   printf '%s\n' "${tfe_license}" |
-    docker login --username terraform images.releases.hashicorp.com --password-stdin \
-      >/dev/null 2>&1
+    docker login --username terraform images.releases.hashicorp.com --password-stdin
 
-  docker pull "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}" \
-    >/dev/null 2>&1
+  docker pull "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}"
 
   log "Generating the /etc/systemd/system/terraform-enterprise.service file."
 
