@@ -256,6 +256,30 @@ main() {
 
   log "Setting up Docker."
 
+  # Find, format, and mount the data disk for Docker (/var/lib/docker).
+  #
+  # On Nitro-based instances (t3, m5, etc.) EBS volumes are NVMe devices
+  # (nvme0n1, nvme1n1, ...); on older instance families they are xvd* devices.
+  # We detect the disk dynamically: the unformatted block device that is not the
+  # root disk.
+  log "  Locating the Docker data disk."
+  root_disk=$(lsblk -no PKNAME "$(findmnt -n -o SOURCE /)" 2>/dev/null || lsblk -dpno NAME | head -1)
+  docker_disk=$(lsblk -dpno NAME,FSTYPE | awk -v root="/dev/${root_disk}" '$2 == "" && $1 != root { print $1; exit }')
+
+  if [ -n "${docker_disk}" ]; then
+    log "  Formatting ${docker_disk} as ext4 for Docker data."
+    mkfs.ext4 -F "${docker_disk}" >/dev/null 2>&1
+
+    mkdir -p /var/lib/docker
+
+    docker_disk_uuid=$(blkid -s UUID -o value "${docker_disk}")
+    printf 'UUID=%s /var/lib/docker ext4 defaults,nofail 0 2\n' "${docker_disk_uuid}" >>/etc/fstab
+    mount /var/lib/docker
+    log "  Mounted ${docker_disk} (UUID=${docker_disk_uuid}) at /var/lib/docker."
+  else
+    log "WARNING: No unformatted data disk found; Docker will use the root volume."
+  fi
+
   # Setup Docker's APT repository.
   curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" |
     gpg --yes --dearmor -o "/usr/share/keyrings/docker.gpg"

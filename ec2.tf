@@ -19,8 +19,11 @@ resource "aws_launch_template" "tfe" {
     security_groups = [aws_security_group.tfe.id]
   }
 
+  # Separate data volume for Docker (/var/lib/docker).
+  # The AMI root device (/dev/xvda) is left at its default size.
+  # Using /dev/xvdb ensures this is always a distinct, non-root volume.
   block_device_mappings {
-    device_name = "/dev/xvda"
+    device_name = "/dev/xvdb"
 
     ebs {
       volume_type = "gp3"
