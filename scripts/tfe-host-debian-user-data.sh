@@ -417,7 +417,6 @@ EOF
   systemctl daemon-reload
   systemctl enable --now terraform-enterprise.service
 
-  # Wait for TFE to come online.
   wait_for_tfe_service
   wait_for_tfe_nodes
 
