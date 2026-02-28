@@ -24,7 +24,7 @@ resource "aws_launch_template" "tfe" {
 
     ebs {
       volume_type = "gp3"
-      volume_size = 50
+      volume_size = var.ec2_volume_size
       throughput  = 125
       iops        = 3000
       encrypted   = true

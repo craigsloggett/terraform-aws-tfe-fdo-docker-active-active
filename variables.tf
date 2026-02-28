@@ -112,6 +112,17 @@ variable "ec2_tfe_instance_type" {
   default     = "t3.medium"
 }
 
+variable "ec2_volume_size" {
+  type        = number
+  description = "The size in GiB of the root EBS volume attached to each TFE host. HashiCorp requires a minimum of 100 GiB for TFE FDO."
+  default     = 100
+
+  validation {
+    condition     = var.ec2_volume_size >= 100
+    error_message = "The root volume must be at least 100 GiB per HashiCorp TFE FDO requirements."
+  }
+}
+
 variable "asg_name" {
   type        = string
   description = "The name of the ASG for the TFE hosts."
