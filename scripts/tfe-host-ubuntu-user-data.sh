@@ -278,6 +278,26 @@ EOF
 net.ipv4.conf.all.forwarding=1
 EOF
 
+  # Write /etc/docker/daemon.json before the packages are installed so Docker
+  # picks up the configuration on its very first start.
+  #
+  # storage-driver overlay2: explicitly set so Docker does not fall back to
+  #   vfs on filesystems that report d_type=false (XFS ftype=0, etc.)
+  # overlay2.override_kernel_check: permits overlay2 on kernels that
+  #   pre-date the upstream d_type check — safe on Ubuntu 22.04 HWE kernels.
+  mkdir -p /etc/docker
+  cat <<'EOF' >/etc/docker/daemon.json
+{
+  "storage-driver": "overlay2",
+  "storage-opts": ["overlay2.override_kernel_check=true"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "3"
+  }
+}
+EOF
+
   install_packages containerd.io docker-ce docker-ce-cli docker-compose-plugin
 
   # Add the ubuntu user to the docker group (created automatically as part of install).
