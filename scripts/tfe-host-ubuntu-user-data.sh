@@ -289,7 +289,6 @@ EOF
   cat <<'EOF' >/etc/docker/daemon.json
 {
   "storage-driver": "overlay2",
-  "storage-opts": ["overlay2.override_kernel_check=true"],
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m",
@@ -303,13 +302,17 @@ EOF
   # Add the ubuntu user to the docker group (created automatically as part of install).
   usermod -aG docker "${username}"
 
-  # Wait for the Docker daemon to be fully ready before trying to use it.
+  # Explicitly start the Docker daemon and wait for it to be ready.
+  log "  Starting the Docker daemon."
+  systemctl enable --now docker
+
   log "  Waiting for the Docker daemon to be ready."
   local retries=30
   while ! docker info >/dev/null 2>&1; do
     retries=$((retries - 1))
     if [ "${retries}" -eq 0 ]; then
-      log "ERROR: Docker daemon did not become ready in time."
+      log "ERROR: Docker daemon did not become ready in time. Daemon logs:"
+      journalctl -u docker --no-pager -n 50 >&2
       exit 1
     fi
     sleep 2
