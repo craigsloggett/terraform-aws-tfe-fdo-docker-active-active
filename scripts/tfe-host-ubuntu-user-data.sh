@@ -53,8 +53,7 @@ set_ssm_parameter_value() {
     --name "${1}" \
     --value "${2}" \
     --type "SecureString" \
-    --overwrite \
-    >/dev/null 2>&1
+    --overwrite
 }
 
 find_secretsmanager_secret() {
@@ -498,7 +497,14 @@ EOF
   wait_for_tfe_nodes
 
   # Put the Admin Token URL in the Parameter Store for convenience.
-  set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "$(get_tfe_admin_token_url)"
+  # This is a non-critical convenience step — TFE is already running.
+  admin_token_url="$(get_tfe_admin_token_url)" || true
+  if [ -n "${admin_token_url}" ]; then
+    set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "${admin_token_url}" || \
+      log "WARNING: Failed to write admin token URL to SSM. TFE is running; retrieve the URL manually with: tfectl admin token --url"
+  else
+    log "WARNING: Could not retrieve admin token URL from tfectl. TFE is running."
+  fi
 }
 
 main "$@"
