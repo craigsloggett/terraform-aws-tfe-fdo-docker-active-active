@@ -28,7 +28,6 @@ wait_for_network() {
 }
 
 get_ec2_region() {
-  log "  Detecting AWS region from instance metadata."
   local token
   token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
     -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
@@ -57,8 +56,7 @@ set_ssm_parameter_value() {
 }
 
 find_secretsmanager_secret() {
-  log "  Looking up an AWS SecretsManager Secret."
-  log "    Query: secret name starts with '${1}'"
+  log "  Looking up SecretsManager secret starting with: ${1}"
   aws secretsmanager list-secrets \
     --region "${AWS_DEFAULT_REGION}" \
     --query "SecretList[?starts_with(Name, '${1}')].Name" \
@@ -66,7 +64,6 @@ find_secretsmanager_secret() {
 }
 
 get_secretsmanager_secret_value() {
-  log "  Grabbing AWS SecretsManager Secret value for: ${1}"
   aws secretsmanager get-secret-value \
     --region "${AWS_DEFAULT_REGION}" \
     --secret-id "${1}" \
@@ -74,23 +71,9 @@ get_secretsmanager_secret_value() {
 }
 
 set_ec2_http_put_response_hop_limit() {
-  log "  Grabbing the EC2 instance metadata token."
-
-  aws_token="$(
-    curl -s -X \
-      PUT "http://169.254.169.254/latest/api/token" \
-      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
-  )"
-
-  log "  Grabbing the EC2 instance ID."
-
-  ec2_instance_id="$(
-    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
-      -s http://169.254.169.254/latest/meta-data/instance-id
-  )"
-
-  log "  Setting the http-put-response-hop-limit to: ${1}"
-
+  local aws_token ec2_instance_id
+  aws_token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  ec2_instance_id=$(curl -s -H "X-aws-ec2-metadata-token: ${aws_token}" http://169.254.169.254/latest/meta-data/instance-id)
   aws ec2 modify-instance-metadata-options \
     --region "${AWS_DEFAULT_REGION}" \
     --instance-id "${ec2_instance_id}" \
@@ -101,22 +84,9 @@ set_ec2_http_put_response_hop_limit() {
 }
 
 get_ec2_private_ip_address() {
-  log "  Grabbing the EC2 instance metadata token."
-
-  aws_token="$(
-    curl -s -X \
-      PUT "http://169.254.169.254/latest/api/token" \
-      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
-  )"
-
-  log "  Grabbing the EC2 instance private IPv4 address."
-
-  private_ip_address="$(
-    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
-      -s http://169.254.169.254/latest/meta-data/local-ipv4
-  )"
-
-  printf '%s\n' "${private_ip_address}"
+  local aws_token
+  aws_token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  curl -s -H "X-aws-ec2-metadata-token: ${aws_token}" http://169.254.169.254/latest/meta-data/local-ipv4
 }
 
 wait_for_tfe_service() {
@@ -141,22 +111,16 @@ get_tfe_admin_token_url() {
 }
 
 main() {
-  # Globally disable globbing and enable exit-on-error.
   set -ef
 
-  # Colors are automatically disabled if output is being used in a
-  # pipe/redirection.
+  # Colors are automatically disabled if output is pipe/redirection.
   ! [ -t 2 ] || {
     c1='\033[1;33m'
     c2='\033[1;34m'
     c3='\033[m'
   }
 
-  # The default username for Ubuntu EC2 instances.
   username="ubuntu"
-
-  # Resolve the AWS region from EC2 instance metadata (IMDSv2) and export it
-  # so that all subsequent AWS CLI calls inherit it without needing ~/.aws/config.
   export AWS_DEFAULT_REGION
   AWS_DEFAULT_REGION="$(get_ec2_region)"
 
@@ -165,7 +129,7 @@ main() {
   tfe_version="$(get_ssm_parameter_value "/TFE/TFE_VERSION")"
   postgresql_major_version="$(get_ssm_parameter_value "/TFE/POSTGRESQL_MAJOR_VERSION")"
 
-  # Application Settings
+  # App Settings
   tfe_encryption_password="$(get_ssm_parameter_value "/TFE/TFE_ENCRYPTION_PASSWORD")"
   tfe_hostname="$(get_ssm_parameter_value "/TFE/TFE_HOSTNAME")"
   tfe_license="$(get_ssm_parameter_value "/TFE/TFE_LICENSE")"
@@ -184,10 +148,7 @@ main() {
   tfe_object_storage_s3_region="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_REGION")"
   tfe_object_storage_s3_bucket="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_BUCKET")"
 
-  # Wait for the network to be available.
   wait_for_network
-
-  # Update the system and install required utilities.
   upgrade_system
   install_packages apt-transport-https ca-certificates curl gnupg unzip jq
 
@@ -255,12 +216,6 @@ main() {
 
   log "Setting up Docker."
 
-  # Find, format, and mount the data disk for Docker (/var/lib/docker).
-  #
-  # On Nitro-based instances (t3, m5, etc.) EBS volumes are NVMe devices
-  # (nvme0n1, nvme1n1, ...); on older instance families they are xvd* devices.
-  # We detect the disk dynamically: the unformatted block device that is not the
-  # root disk.
   log "  Locating the Docker data disk."
   root_disk=$(lsblk -no PKNAME "$(findmnt -n -o SOURCE /)" 2>/dev/null || lsblk -dpno NAME | head -1)
   docker_disk=$(lsblk -dpno NAME,FSTYPE | awk -v root="/dev/${root_disk}" '$2 == "" && $1 != root { print $1; exit }')
@@ -296,18 +251,12 @@ EOF
 
   # Enable ipv4 forwarding, required on CIS hardened machines.
   sysctl net.ipv4.conf.all.forwarding=1 >/dev/null 2>&1
-  # Persist this configuration after reboot.
   cat <<'EOF' >/etc/sysctl.d/enabled_ipv4_forwarding.conf
 net.ipv4.conf.all.forwarding=1
 EOF
 
   # Write /etc/docker/daemon.json before the packages are installed so Docker
   # picks up the configuration on its very first start.
-  #
-  # storage-driver overlay2: explicitly set so Docker does not fall back to
-  #   vfs on filesystems that report d_type=false (XFS ftype=0, etc.)
-  # overlay2.override_kernel_check: permits overlay2 on kernels that
-  #   pre-date the upstream d_type check — safe on Ubuntu 22.04 HWE kernels.
   mkdir -p /etc/docker
   cat <<'EOF' >/etc/docker/daemon.json
 {
@@ -363,11 +312,9 @@ EOF
 
   log "Setting the EC2 HTTP PUT response hop limit."
 
-  # Set the `http-put-response-hop-limit` option to a value of 2 or greater.
-  #
-  # This is to facilitate Terraform Enterprise running in a containter since
-  # it looks up the instance profile on startup when external object storage
-  # has been configured.
+  # Set the `http-put-response-hop-limit` option to a value of 2 or greater
+  # This is to facilitate TFE running in a containter - it looks up the instance 
+  # profile on startup when external object storage has been configured
   set_ec2_http_put_response_hop_limit 2
 
   log "Generating the /run/terraform-enterprise/docker-compose.yml file."
@@ -375,7 +322,7 @@ EOF
   mkdir -p /var/lib/terraform-enterprise
   mkdir -p /run/terraform-enterprise
 
-  # Create a .env file to correctly handle special characters in passwords.
+  # Create a .env file to handle special chars in passwords
   cat <<EOF >/run/terraform-enterprise/.env
 TFE_LICENSE="${tfe_license}"
 TFE_HOSTNAME="${tfe_hostname}"
@@ -496,14 +443,12 @@ EOF
   wait_for_tfe_service
   wait_for_tfe_nodes
 
-  # Put the Admin Token URL in the Parameter Store for convenience.
-  # This is a non-critical convenience step — TFE is already running.
   admin_token_url="$(get_tfe_admin_token_url)" || true
   if [ -n "${admin_token_url}" ]; then
     set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "${admin_token_url}" || \
-      log "WARNING: Failed to write admin token URL to SSM. TFE is running; retrieve the URL manually with: tfectl admin token --url"
+      log "WARNING: Failed to write admin token URL to SSM."
   else
-    log "WARNING: Could not retrieve admin token URL from tfectl. TFE is running."
+    log "WARNING: Could not retrieve admin token URL from tfectl."
   fi
 }
 
