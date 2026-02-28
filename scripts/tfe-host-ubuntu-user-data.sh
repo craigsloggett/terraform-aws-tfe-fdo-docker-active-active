@@ -47,12 +47,14 @@ get_ssm_parameter_value() {
 
 set_ssm_parameter_value() {
   log "  Setting AWS Systems Manager Parameter Value for: ${1}"
+  # Use --cli-input-json to prevent AWS CLI v2 from auto-fetching values that
+  # begin with https:// (e.g. the TFE admin token URL).
   aws ssm put-parameter \
     --region "${AWS_DEFAULT_REGION}" \
-    --name "${1}" \
-    --value "${2}" \
-    --type "SecureString" \
-    --overwrite
+    --cli-input-json "$(jq -n \
+      --arg name "${1}" \
+      --arg value "${2}" \
+      '{"Name":$name,"Value":$value,"Type":"SecureString","Overwrite":true}')"
 }
 
 find_secretsmanager_secret() {
