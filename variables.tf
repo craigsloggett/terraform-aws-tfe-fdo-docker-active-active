@@ -84,8 +84,22 @@ variable "elasticache_security_group_name" {
 
 variable "ec2_instance_ami_name" {
   type        = string
-  description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances."
-  default     = "hc-base-ubuntu-2204-*"
+  description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances. Note: debian-13-amd64-20251117-2299 is custom image security integration, others are approved by HashiCorp security."
+  default     = "debian-13-amd64-20251117-2299"
+
+  validation {
+    condition = contains([
+      "debian-13-amd64-20251117-2299",
+      "hc-base-ubuntu-2204",
+      "hc-base-ubuntu-2404-amd64",
+      "hc-base-ubuntu-2404-arm64",
+      "hc-base-al2023-x86_64",
+      "hc-base-al2023-arm64",
+      "hc-base-rhel-9-x86_64",
+      "hc-base-rhel-9-arm64",
+    ], var.ec2_instance_ami_name)
+    error_message = "ec2_instance_ami_name must be one of the approved AMI name patterns."
+  }
 }
 
 variable "ec2_bastion_instance_name" {
