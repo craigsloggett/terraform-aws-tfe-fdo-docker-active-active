@@ -121,6 +121,40 @@ resource "aws_ssm_parameter" "tfe_object_storage_s3_bucket" {
   value       = aws_s3_bucket.tfe.id
 }
 
+# Uptycs EDR Agent Settings (Debian instances only)
+
+resource "aws_ssm_parameter" "uptycs_sensor_url" {
+  count       = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? 1 : 0
+  name        = "/TFE/UPTYCS_SENSOR_URL"
+  description = "S3 URI (s3://bucket/key) for the Uptycs EDR sensor .deb package."
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = var.uptycs_sensor_url
+
+  lifecycle {
+    precondition {
+      condition     = var.uptycs_sensor_url != null
+      error_message = "uptycs_sensor_url must be set when ec2_instance_ami_name is the Debian AMI."
+    }
+  }
+}
+
+resource "aws_ssm_parameter" "uptycs_owner_tag" {
+  count       = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? 1 : 0
+  name        = "/TFE/UPTYCS_OWNER_TAG"
+  description = "Uptycs osquery OWNER tag value (e.g. team/owner@hashicorp.com)."
+  type        = "SecureString"
+  key_id      = data.aws_kms_key.ssm.id
+  value       = var.uptycs_owner_tag
+
+  lifecycle {
+    precondition {
+      condition     = var.uptycs_owner_tag != null
+      error_message = "uptycs_owner_tag must be set when ec2_instance_ami_name is the Debian AMI."
+    }
+  }
+}
+
 # SSM Agent Auto-Update Association
 #
 # Runs AWS-UpdateSSMAgent on all instances tagged ManagedBy=terraform at

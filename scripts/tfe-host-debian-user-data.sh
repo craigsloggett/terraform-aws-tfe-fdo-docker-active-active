@@ -152,6 +152,10 @@ main() {
   tfe_object_storage_s3_region="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_REGION")"
   tfe_object_storage_s3_bucket="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_BUCKET")"
 
+  # Uptycs EDR Agent Settings
+  uptycs_sensor_url="$(get_ssm_parameter_value "/TFE/UPTYCS_SENSOR_URL")"
+  uptycs_owner_tag="$(get_ssm_parameter_value "/TFE/UPTYCS_OWNER_TAG")"
+
   # Wait for the network to be available.
   wait_for_network
 
@@ -172,6 +176,21 @@ main() {
     log "WARNING: Failed to download SSM agent. Continuing without update."
   fi
   rm -rf /tmp/ssm
+
+  log "Installing the Uptycs EDR agent."
+
+  mkdir -p /tmp/uptycs
+  if aws s3 cp "${uptycs_sensor_url}" /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1; then
+    dpkg -i /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1 || true
+    # Write osquery tags to the flags file so they persist across reboots.
+    mkdir -p /etc/osquery
+    printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
+      >>/etc/osquery/osquery.flags
+    log "  Uptycs EDR agent installed and tags configured."
+  else
+    log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
+  fi
+  rm -rf /tmp/uptycs
 
   log "Setting up the PostgreSQL client."
 
