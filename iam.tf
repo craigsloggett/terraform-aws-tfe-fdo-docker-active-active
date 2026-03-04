@@ -161,6 +161,47 @@ resource "aws_iam_role_policy_attachment" "ssm_managed_instance_core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Read the Uptycs sensor package from S3 (Debian instances only).
+#
+# The bucket name is extracted from the s3:// URI stored in var.uptycs_sensor_url.
+
+locals {
+  uptycs_s3_bucket = var.uptycs_sensor_url != null ? split("/", trimprefix(var.uptycs_sensor_url, "s3://"))[0] : ""
+}
+
+data "aws_iam_policy_document" "uptycs_s3" {
+  count = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? 1 : 0
+
+  statement {
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    resources = [
+      "arn:aws:s3:::${local.uptycs_s3_bucket}/*"
+    ]
+  }
+
+  statement {
+    effect  = "Allow"
+    actions = ["s3:ListBucket"]
+    resources = [
+      "arn:aws:s3:::${local.uptycs_s3_bucket}"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "uptycs_s3" {
+  count  = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? 1 : 0
+  name   = "S3ReadUptycsSensorPackage"
+  path   = "/"
+  policy = data.aws_iam_policy_document.uptycs_s3[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "uptycs_s3" {
+  count      = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? 1 : 0
+  role       = aws_iam_role.tfe.name
+  policy_arn = aws_iam_policy.uptycs_s3[0].arn
+}
+
 # Create an EC2 instance profile using the TFE role.
 
 data "aws_iam_policy_document" "tfe_assume_role" {

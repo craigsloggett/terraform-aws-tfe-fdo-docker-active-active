@@ -275,12 +275,14 @@ variable "ec2_instance_profile_name" {
 
 variable "uptycs_sensor_url" {
   type        = string
+  nullable    = true
   default     = "s3://ashscarbrough-temp-bucket/hashicorp-uptycs-protect-5.19.0.9-Uptycs.deb"
   description = "S3 URI (s3://bucket/key) for the Uptycs EDR sensor .deb package. Required when ec2_instance_ami_name is the Debian AMI; ignored otherwise."
 }
 
 variable "uptycs_owner_tag" {
   type        = string
+  nullable    = true
   default     = "team/ashley.scarbrough@hashicorp.com"
   description = "Value for the OWNER field in the Uptycs osquery tags (e.g. team/owner@hashicorp.com). Required when ec2_instance_ami_name is the Debian AMI; ignored otherwise."
 }
