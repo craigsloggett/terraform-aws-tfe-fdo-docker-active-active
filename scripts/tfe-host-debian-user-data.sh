@@ -27,9 +27,18 @@ wait_for_network() {
   done
 }
 
+get_ec2_region() {
+  local token
+  token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  curl -s -H "X-aws-ec2-metadata-token: ${token}" \
+    "http://169.254.169.254/latest/meta-data/placement/region"
+}
+
 get_ssm_parameter_value() {
   log "  Grabbing AWS Systems Manager Parameter Value for: ${1}"
   aws ssm get-parameter \
+    --region "${AWS_DEFAULT_REGION}" \
     --name "${1}" \
     --query "Parameter.Value" \
     --with-decryption \
@@ -39,47 +48,34 @@ get_ssm_parameter_value() {
 set_ssm_parameter_value() {
   log "  Setting AWS Systems Manager Parameter Value for: ${1}"
   aws ssm put-parameter \
-    --name "${1}" \
-    --value "${2}" \
-    --type "SecureString" \
-    --overwrite \
-    >/dev/null 2>&1
+    --region "${AWS_DEFAULT_REGION}" \
+    --cli-input-json "$(jq -n \
+      --arg name "${1}" \
+      --arg value "${2}" \
+      '{"Name":$name,"Value":$value,"Type":"SecureString","Overwrite":true}')"
 }
 
 find_secretsmanager_secret() {
-  log "  Looking up an AWS SecretsManager Secret."
-  log "    Query: secret name starts with '${1}'"
+  log "  Looking up SecretsManager secret starting with: ${1}"
   aws secretsmanager list-secrets \
+    --region "${AWS_DEFAULT_REGION}" \
     --query "SecretList[?starts_with(Name, '${1}')].Name" \
     --output text
 }
 
 get_secretsmanager_secret_value() {
-  log "  Grabbing AWS SecretsManager Secret value for: ${1}"
   aws secretsmanager get-secret-value \
+    --region "${AWS_DEFAULT_REGION}" \
     --secret-id "${1}" \
     --query SecretString --output text
 }
 
 set_ec2_http_put_response_hop_limit() {
-  log "  Grabbing the EC2 instance metadata token."
-
-  aws_token="$(
-    curl -s -X \
-      PUT "http://169.254.169.254/latest/api/token" \
-      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
-  )"
-
-  log "  Grabbing the EC2 instance ID."
-
-  ec2_instance_id="$(
-    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
-      -s http://169.254.169.254/latest/meta-data/instance-id
-  )"
-
-  log "  Setting the http-put-response-hop-limit to: ${1}"
-
+  local aws_token ec2_instance_id
+  aws_token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  ec2_instance_id=$(curl -s -H "X-aws-ec2-metadata-token: ${aws_token}" http://169.254.169.254/latest/meta-data/instance-id)
   aws ec2 modify-instance-metadata-options \
+    --region "${AWS_DEFAULT_REGION}" \
     --instance-id "${ec2_instance_id}" \
     --http-tokens required \
     --http-endpoint enabled \
@@ -88,22 +84,9 @@ set_ec2_http_put_response_hop_limit() {
 }
 
 get_ec2_private_ip_address() {
-  log "  Grabbing the EC2 instance metadata token."
-
-  aws_token="$(
-    curl -s -X \
-      PUT "http://169.254.169.254/latest/api/token" \
-      -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
-  )"
-
-  log "  Grabbing the EC2 instance private IPv4 address."
-
-  private_ip_address="$(
-    curl -H "X-aws-ec2-metadata-token: ${aws_token}" \
-      -s http://169.254.169.254/latest/meta-data/local-ipv4
-  )"
-
-  printf '%s\n' "${private_ip_address}"
+  local aws_token
+  aws_token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+  curl -s -H "X-aws-ec2-metadata-token: ${aws_token}" http://169.254.169.254/latest/meta-data/local-ipv4
 }
 
 wait_for_tfe_service() {
@@ -142,6 +125,9 @@ main() {
   # The default username assigned to UID 1000 in AWS EC2 instances.
   username="admin"
 
+  export AWS_DEFAULT_REGION
+  AWS_DEFAULT_REGION="$(get_ec2_region)"
+
   log "Populating configuration variables."
 
   tfe_version="$(get_ssm_parameter_value "/TFE/TFE_VERSION")"
@@ -176,7 +162,8 @@ main() {
   log "Updating the SSM Agent to the latest version."
 
   mkdir -p /tmp/ssm
-  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb \
+  arch=$(dpkg --print-architecture)
+  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_${arch}/amazon-ssm-agent.deb" \
     -o /tmp/ssm/amazon-ssm-agent.deb 2>/dev/null; then
     dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1 || true
     systemctl enable amazon-ssm-agent
@@ -237,18 +224,34 @@ main() {
 
   log "Setting up Docker."
 
+  log "  Locating the Docker data disk."
+  root_disk=$(lsblk -no PKNAME "$(findmnt -n -o SOURCE /)" 2>/dev/null || lsblk -dpno NAME | head -1)
+  docker_disk=$(lsblk -dpno NAME,FSTYPE | awk -v root="/dev/${root_disk}" '$2 == "" && $1 != root { print $1; exit }')
+
+  if [ -n "${docker_disk}" ]; then
+    log "  Formatting ${docker_disk} as ext4 for Docker data."
+    mkfs.ext4 -F "${docker_disk}" >/dev/null 2>&1
+    mkdir -p /var/lib/docker
+    docker_disk_uuid=$(blkid -s UUID -o value "${docker_disk}")
+    printf 'UUID=%s /var/lib/docker ext4 defaults,nofail 0 2\n' "${docker_disk_uuid}" >>/etc/fstab
+    mount /var/lib/docker
+    log "  Mounted ${docker_disk} (UUID=${docker_disk_uuid}) at /var/lib/docker."
+  else
+    log "WARNING: No unformatted data disk found; Docker will use the root volume."
+  fi
+
   # Setup Docker's APT repository.
   curl -fsSL "https://download.docker.com/linux/debian/gpg" |
     gpg --yes --dearmor -o "/usr/share/keyrings/docker.gpg"
 
   chmod a+r /usr/share/keyrings/docker.gpg
 
-  cat <<'EOF' >/etc/apt/sources.list.d/docker.sources
+  cat <<EOF >/etc/apt/sources.list.d/docker.sources
 Types: deb
 URIs: https://download.docker.com/linux/debian
 Suites: bookworm
 Components: stable
-arch: amd64
+arch: ${arch}
 signed-by: /usr/share/keyrings/docker.gpg
 EOF
 
@@ -259,10 +262,38 @@ EOF
 net.ipv4.conf.all.forwarding=1
 EOF
 
-  install_packages docker-ce docker-ce-cli
+  # Write /etc/docker/daemon.json before packages are installed.
+  mkdir -p /etc/docker
+  cat <<'EOF' >/etc/docker/daemon.json
+{
+  "storage-driver": "overlay2",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "3"
+  }
+}
+EOF
+
+  install_packages containerd.io docker-ce docker-ce-cli docker-compose-plugin
 
   # Add the admin user to the docker group (created automatically as part of install).
   usermod -aG docker "${username}"
+
+  log "  Starting the Docker daemon."
+  systemctl enable --now docker
+
+  log "  Waiting for the Docker daemon to be ready."
+  local retries=30
+  while ! docker info >/dev/null 2>&1; do
+    retries=$((retries - 1))
+    if [ "${retries}" -eq 0 ]; then
+      log "ERROR: Docker daemon did not become ready in time. Daemon logs:"
+      journalctl -u docker --no-pager -n 50 >&2
+      exit 1
+    fi
+    sleep 2
+  done
 
   log "Setting up a TLS certificate."
 
@@ -386,11 +417,9 @@ EOF
   log "Pulling Terraform Enterprise ${tfe_version} from the HashiCorp Docker registry."
 
   printf '%s\n' "${tfe_license}" |
-    docker login --username terraform images.releases.hashicorp.com --password-stdin \
-      >/dev/null 2>&1
+    docker login --username terraform images.releases.hashicorp.com --password-stdin
 
-  docker pull "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}" \
-    >/dev/null 2>&1
+  docker pull "images.releases.hashicorp.com/hashicorp/terraform-enterprise:${tfe_version}"
 
   log "Generating the /etc/systemd/system/terraform-enterprise.service file."
 
@@ -420,8 +449,13 @@ EOF
   wait_for_tfe_service
   wait_for_tfe_nodes
 
-  # Put the Admin Token URL in the Parameter Store for convenience.
-  set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "$(get_tfe_admin_token_url)"
+  admin_token_url="$(get_tfe_admin_token_url)" || true
+  if [ -n "${admin_token_url}" ]; then
+    set_ssm_parameter_value "/TFE/TFE_ADMIN_TOKEN_URL" "${admin_token_url}" || \
+      log "WARNING: Failed to write admin token URL to SSM."
+  else
+    log "WARNING: Could not retrieve admin token URL from tfectl."
+  fi
 }
 
 main "$@"
