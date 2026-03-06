@@ -7,16 +7,12 @@ log() {
 
 upgrade_system() {
   log "  Upgrading all system packages."
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get -yq update >/dev/null
-  apt-get -yq upgrade >/dev/null
+  dnf upgrade -y >/dev/null
 }
 
 install_packages() {
   log "  Installing the following packages: $*"
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get -yq update >/dev/null
-  apt-get -yq install "${@}" >/dev/null
+  dnf install -y "${@}" >/dev/null
 }
 
 wait_for_network() {
@@ -122,7 +118,7 @@ main() {
     c3='\033[m'
   }
 
-  username="ubuntu"
+  username="ec2-user"
   export AWS_DEFAULT_REGION
   AWS_DEFAULT_REGION="$(get_ec2_region)"
 
@@ -152,29 +148,40 @@ main() {
 
   wait_for_network
   upgrade_system
-  install_packages apt-transport-https ca-certificates curl gnupg unzip jq
+  install_packages curl unzip jq
 
   log "Updating the SSM Agent to the latest version."
+  dnf upgrade -y amazon-ssm-agent >/dev/null 2>&1 || \
+    log "WARNING: Failed to update SSM agent. Continuing with existing version."
+  systemctl enable amazon-ssm-agent
+  systemctl restart amazon-ssm-agent
 
-  mkdir -p /tmp/ssm
-  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/ubuntu_amd64/amazon-ssm-agent.deb \
-    -o /tmp/ssm/amazon-ssm-agent.deb 2>/dev/null; then
-    dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1 || true
-    systemctl enable amazon-ssm-agent
-    systemctl restart amazon-ssm-agent
+  log "Installing the Uptycs EDR agent."
+
+  mkdir -p /tmp/uptycs
+  if aws s3 cp "${uptycs_sensor_url}" /tmp/uptycs/uptycs-sensor.rpm >/dev/null 2>&1; then
+    dnf install -y /tmp/uptycs/uptycs-sensor.rpm >/dev/null 2>&1 || \
+      log "WARNING: Failed to install Uptycs sensor package."
+    mkdir -p /etc/osquery
+    printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
+      >>/etc/osquery/osquery.flags
+    log "  Uptycs EDR agent installed and tags configured."
   else
-    log "WARNING: Failed to download SSM agent. Continuing without update."
+    log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
   fi
-  rm -rf /tmp/ssm
+  rm -rf /tmp/uptycs
 
   log "Setting up the PostgreSQL client."
 
-  # Setup Postgres' APT repository.
-  install_packages "postgresql-common"
-  /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+  # Install the PostgreSQL yum repository (EL9-compatible for AL2023).
+  dnf install -y \
+    "https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm" \
+    >/dev/null 2>&1 || true
+  # Disable the built-in PostgreSQL module to avoid conflicts.
+  dnf -qy module disable postgresql >/dev/null 2>&1 || true
 
-  # Install the PostgreSQL CLI tool.
-  install_packages "postgresql-client-${postgresql_major_version}"
+  # Install the PostgreSQL client.
+  install_packages "postgresql${postgresql_major_version}"
 
   log "Preparing to connect to the RDS instance."
 
@@ -236,20 +243,8 @@ main() {
     log "WARNING: No unformatted data disk found; Docker will use the root volume."
   fi
 
-  # Setup Docker's APT repository.
-  curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" |
-    gpg --yes --dearmor -o "/usr/share/keyrings/docker.gpg"
-
-  chmod a+r /usr/share/keyrings/docker.gpg
-
-  cat <<'EOF' >/etc/apt/sources.list.d/docker.sources
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: jammy
-Components: stable
-arch: amd64
-signed-by: /usr/share/keyrings/docker.gpg
-EOF
+  # Add the Docker CE yum repository for Amazon Linux 2023.
+  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
 
   # Enable ipv4 forwarding, required on CIS hardened machines.
   sysctl net.ipv4.conf.all.forwarding=1 >/dev/null 2>&1
