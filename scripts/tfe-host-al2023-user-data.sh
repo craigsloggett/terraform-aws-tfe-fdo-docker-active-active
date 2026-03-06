@@ -148,7 +148,7 @@ main() {
 
   wait_for_network
   upgrade_system
-  install_packages curl unzip jq
+  install_packages unzip jq
 
   log "Updating the SSM Agent to the latest version."
   dnf upgrade -y amazon-ssm-agent >/dev/null 2>&1 || \
