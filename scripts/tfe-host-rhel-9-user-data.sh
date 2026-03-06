@@ -124,15 +124,15 @@ main() {
 
   # Install and start the SSM agent first so Session Manager
   log "Installing the SSM Agent."
-  arch=$(uname -m)
-  case "$arch" in
-    x86_64)  arch="amd64" ;;
-    aarch64) arch="arm64" ;;
-    *)        log "WARNING: Unsupported architecture: $arch"; exit 1 ;;
+  uname_arch=$(uname -m)
+  case "$uname_arch" in
+    x86_64)  ssm_arch="amd64" ;;
+    aarch64) ssm_arch="arm64" ;;
+    *)        log "WARNING: Unsupported architecture: $uname_arch"; exit 1 ;;
   esac
 
   mkdir -p /tmp/ssm
-  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_${arch}/amazon-ssm-agent.rpm" \
+  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_${ssm_arch}/amazon-ssm-agent.rpm" \
     -o /tmp/ssm/amazon-ssm-agent.rpm 2>/dev/null; then
     dnf install -y /tmp/ssm/amazon-ssm-agent.rpm >/dev/null 2>&1 || true
     systemctl enable amazon-ssm-agent
@@ -174,7 +174,7 @@ main() {
 
   # Install the PostgreSQL yum repository (EL9-compatible for RHEL 9).
   dnf install -y \
-    "https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm" \
+    "https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-${uname_arch}/pgdg-redhat-repo-latest.noarch.rpm" \
     >/dev/null 2>&1 || true
   # Disable the built-in PostgreSQL module to avoid conflicts.
   dnf -qy module disable postgresql >/dev/null 2>&1 || true
