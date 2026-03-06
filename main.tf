@@ -69,20 +69,16 @@ locals {
   route53_alias_record_name = "${var.tfe_subdomain}.${var.route53_zone_name}"
   ami_id                    = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? data.aws_ami.debian[0].id : data.aws_ami.hc-base-ami[0].id
 
-  user_data_script = lookup(
-    {
-      "debian-13-amd64-20251117-2299" = "${path.module}/scripts/tfe-host-debian-user-data.sh"
-      "hc-base-ubuntu-2204-*"         = "${path.module}/scripts/tfe-host-ubuntu-2204-user-data.sh"
-      "hc-base-ubuntu-2404-amd64"     = "${path.module}/scripts/tfe-host-ubuntu-2404-user-data.sh"
-      "hc-base-ubuntu-2404-arm64"     = "${path.module}/scripts/tfe-host-ubuntu-2404-user-data.sh"
-      "hc-base-al2023-x86_64-*"       = "${path.module}/scripts/tfe-host-al2023-user-data.sh"
-      "hc-base-al2023-arm64-*"        = "${path.module}/scripts/tfe-host-al2023-user-data.sh"
-      "hc-base-rhel-9-x86_64-*"       = "${path.module}/scripts/tfe-host-rhel-9-user-data.sh"
-      "hc-base-rhel-9-arm64-*"        = "${path.module}/scripts/tfe-host-rhel-9-user-data.sh"
-    },
-    var.ec2_instance_ami_name,
-    "${path.module}/scripts/tfe-host-ubuntu-2204-user-data.sh"
-  )
+  user_data_script = {
+    "debian-13-amd64-20251117-2299" = "${path.module}/scripts/tfe-host-debian-user-data.sh"
+    "hc-base-ubuntu-2204"           = "${path.module}/scripts/tfe-host-ubuntu-2204-user-data.sh"
+    "hc-base-ubuntu-2404-amd64"     = "${path.module}/scripts/tfe-host-ubuntu-2404-user-data.sh"
+    "hc-base-ubuntu-2404-arm64"     = "${path.module}/scripts/tfe-host-ubuntu-2404-user-data.sh"
+    "hc-base-al2023-x86_64"         = "${path.module}/scripts/tfe-host-al2023-user-data.sh"
+    "hc-base-al2023-arm64"          = "${path.module}/scripts/tfe-host-al2023-user-data.sh"
+    "hc-base-rhel-9-x86_64"         = "${path.module}/scripts/tfe-host-rhel-9-user-data.sh"
+    "hc-base-rhel-9-arm64"          = "${path.module}/scripts/tfe-host-rhel-9-user-data.sh"
+  }[var.ec2_instance_ami_name]
 }
 
 resource "random_string" "tfe_encryption_password" {
