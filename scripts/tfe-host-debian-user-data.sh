@@ -186,8 +186,14 @@ main() {
     mkdir -p /etc/osquery
     printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
       >>/etc/osquery/osquery.flags
-    systemctl enable --now uptycs-sensor
-    log "  Uptycs EDR agent installed, enabled, and started."
+    uptycs_service="$(dpkg -L uptycs-sensor 2>/dev/null | grep '\.service$' | head -1 | xargs -r basename)"
+    uptycs_service="${uptycs_service%.service}"
+    if [ -n "${uptycs_service}" ]; then
+      systemctl enable --now "${uptycs_service}" || true
+      log "  Uptycs EDR agent installed, enabled, and started (service: ${uptycs_service})."
+    else
+      log "WARNING: Could not determine Uptycs service name. Agent installed but not started."
+    fi
   else
     log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
   fi
