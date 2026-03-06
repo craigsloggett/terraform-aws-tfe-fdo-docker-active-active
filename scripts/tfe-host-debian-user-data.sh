@@ -182,7 +182,7 @@ main() {
   mkdir -p /tmp/uptycs
   if aws s3 cp "${uptycs_sensor_url}" /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1; then
     apt-get install -yq /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1 || \
-      log "WARNING: Failed to install Uptycs sensor package. Check apt dependencies."
+      log "WARNING: Failed to install Uptycs sensor package."
     # Write osquery tags to the flags file so they persist across reboots.
     mkdir -p /etc/osquery
     printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
