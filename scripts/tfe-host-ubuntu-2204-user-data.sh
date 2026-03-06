@@ -157,7 +157,8 @@ main() {
   log "Updating the SSM Agent to the latest version."
 
   mkdir -p /tmp/ssm
-  if curl -sSL https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/ubuntu_amd64/amazon-ssm-agent.deb \
+  arch=$(dpkg --print-architecture)
+  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/ubuntu_${arch}/amazon-ssm-agent.deb" \
     -o /tmp/ssm/amazon-ssm-agent.deb 2>/dev/null; then
     dpkg -i /tmp/ssm/amazon-ssm-agent.deb >/dev/null 2>&1 || true
     systemctl enable amazon-ssm-agent
