@@ -85,7 +85,7 @@ variable "elasticache_security_group_name" {
 variable "ec2_instance_ami_name" {
   type        = string
   description = "The name of the AMI used as a filter for both bastion and TFE EC2 instances. Note: debian-13-amd64-20251117-2299 is custom image security integration, others are approved by HashiCorp security."
-  default     = "hc-base-rhel-9-arm64"
+  default     = "hc-base-rhel-9-x86_64"
 
   validation {
     condition = contains([
