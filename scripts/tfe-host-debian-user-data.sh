@@ -186,8 +186,12 @@ main() {
     mkdir -p /etc/osquery
     printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
       >>/etc/osquery/osquery.flags
-    uptycs_service="$(dpkg -L uptycs-sensor 2>/dev/null | grep '\.service$' | head -1 | xargs -r basename)"
+    uptycs_service="$(find /lib/systemd/system /etc/systemd/system -maxdepth 1 -name '*uptycs*' -name '*.service' 2>/dev/null | head -1 | xargs -r basename)"
     uptycs_service="${uptycs_service%.service}"
+    # Fall back to scanning loaded unit files if the service file wasn't found on disk.
+    if [ -z "${uptycs_service}" ]; then
+      uptycs_service="$(systemctl list-unit-files --no-legend 2>/dev/null | awk '/uptycs/ && /\.service/ { gsub(/\.service$/, "", $1); print $1; exit }')"
+    fi
     if [ -n "${uptycs_service}" ]; then
       systemctl enable --now "${uptycs_service}" || true
       log "  Uptycs EDR agent installed, enabled, and started (service: ${uptycs_service})."
