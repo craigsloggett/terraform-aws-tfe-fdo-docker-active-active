@@ -186,7 +186,8 @@ main() {
     mkdir -p /etc/osquery
     printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
       >>/etc/osquery/osquery.flags
-    log "  Uptycs EDR agent installed and tags configured."
+    systemctl enable --now uptycs-sensor
+    log "  Uptycs EDR agent installed, enabled, and started."
   else
     log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
   fi
