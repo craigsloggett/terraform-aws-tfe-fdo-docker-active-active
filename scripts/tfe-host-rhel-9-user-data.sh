@@ -122,6 +122,21 @@ main() {
   export AWS_DEFAULT_REGION
   AWS_DEFAULT_REGION="$(get_ec2_region)"
 
+  # Install and start the SSM agent first so Session Manager access is available
+  # even if the rest of the script fails.
+  log "Installing the SSM Agent."
+  arch=$(uname -m)
+  mkdir -p /tmp/ssm
+  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_${arch}/amazon-ssm-agent.rpm" \
+    -o /tmp/ssm/amazon-ssm-agent.rpm 2>/dev/null; then
+    dnf install -y /tmp/ssm/amazon-ssm-agent.rpm >/dev/null 2>&1 || true
+    systemctl enable amazon-ssm-agent
+    systemctl restart amazon-ssm-agent
+  else
+    log "WARNING: Failed to download SSM agent."
+  fi
+  rm -rf /tmp/ssm
+
   log "Populating configuration variables."
 
   tfe_version="$(get_ssm_parameter_value "/TFE/TFE_VERSION")"
@@ -149,19 +164,6 @@ main() {
   wait_for_network
   upgrade_system
   install_packages unzip jq
-
-  log "Updating the SSM Agent to the latest version."
-  arch=$(uname -m)
-  mkdir -p /tmp/ssm
-  if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_${arch}/amazon-ssm-agent.rpm" \
-    -o /tmp/ssm/amazon-ssm-agent.rpm 2>/dev/null; then
-    dnf install -y /tmp/ssm/amazon-ssm-agent.rpm >/dev/null 2>&1 || true
-    systemctl enable amazon-ssm-agent
-    systemctl restart amazon-ssm-agent
-  else
-    log "WARNING: Failed to download SSM agent. Continuing without update."
-  fi
-  rm -rf /tmp/ssm
 
   log "Setting up the PostgreSQL client."
 
