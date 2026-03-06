@@ -122,10 +122,15 @@ main() {
   export AWS_DEFAULT_REGION
   AWS_DEFAULT_REGION="$(get_ec2_region)"
 
-  # Install and start the SSM agent first so Session Manager access is available
-  # even if the rest of the script fails.
+  # Install and start the SSM agent first so Session Manager
   log "Installing the SSM Agent."
   arch=$(uname -m)
+  case "$arch" in
+    x86_64)  arch="amd64" ;;
+    aarch64) arch="arm64" ;;
+    *)        log "WARNING: Unsupported architecture: $arch"; exit 1 ;;
+  esac
+
   mkdir -p /tmp/ssm
   if curl -sSL "https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_${arch}/amazon-ssm-agent.rpm" \
     -o /tmp/ssm/amazon-ssm-agent.rpm 2>/dev/null; then
