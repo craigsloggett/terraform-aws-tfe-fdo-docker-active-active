@@ -156,23 +156,6 @@ main() {
   systemctl enable amazon-ssm-agent
   systemctl restart amazon-ssm-agent
 
-  log "Installing the Uptycs EDR agent."
-
-  mkdir -p /tmp/uptycs
-  if aws s3 cp "${uptycs_sensor_url}" /tmp/uptycs/uptycs-sensor.rpm >/dev/null 2>&1; then
-    dnf install -y /tmp/uptycs/uptycs-sensor.rpm >/dev/null 2>&1 || \
-      log "WARNING: Failed to install Uptycs sensor package."
-    mkdir -p /etc/osquery
-    printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
-      >>/etc/osquery/osquery.flags
-    log "  Uptycs EDR agent installed and tags configured."
-  else
-    log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
-  fi
-  rm -rf /tmp/uptycs
-
-  log "Setting up the PostgreSQL client."
-
   # Install the PostgreSQL yum repository (EL9-compatible for AL2023).
   dnf install -y \
     "https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm" \
@@ -243,8 +226,17 @@ main() {
     log "WARNING: No unformatted data disk found; Docker will use the root volume."
   fi
 
-  # Add the Docker CE yum repository for Amazon Linux 2023.
-  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
+  # Write the Docker CE repo file explicitly pointing to CentOS 9 packages.
+  # Using dnf config-manager --add-repo fails on AL2023 because it auto-detects
+  # the OS version and constructs a path that does not exist on download.docker.com.
+  cat <<'EOF' >/etc/yum.repos.d/docker-ce.repo
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://download.docker.com/linux/centos/9/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+EOF
 
   # Enable ipv4 forwarding, required on CIS hardened machines.
   sysctl net.ipv4.conf.all.forwarding=1 >/dev/null 2>&1
