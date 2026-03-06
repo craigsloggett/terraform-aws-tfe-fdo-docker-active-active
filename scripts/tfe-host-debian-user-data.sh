@@ -111,14 +111,18 @@ get_tfe_admin_token_url() {
 }
 
 main() {
+  # Globally disable globbing and enable exit-on-error.
   set -ef
 
+  # Colors are automatically disabled if output is being used in a
+  # pipe/redirection.
   ! [ -t 2 ] || {
     c1='\033[1;33m'
     c2='\033[1;34m'
     c3='\033[m'
   }
 
+  # The default username assigned to UID 1000 in AWS EC2 instances.
   username="admin"
 
   export AWS_DEFAULT_REGION
@@ -129,26 +133,33 @@ main() {
   tfe_version="$(get_ssm_parameter_value "/TFE/TFE_VERSION")"
   postgresql_major_version="$(get_ssm_parameter_value "/TFE/POSTGRESQL_MAJOR_VERSION")"
 
+  # Application Settings
   tfe_encryption_password="$(get_ssm_parameter_value "/TFE/TFE_ENCRYPTION_PASSWORD")"
   tfe_hostname="$(get_ssm_parameter_value "/TFE/TFE_HOSTNAME")"
   tfe_license="$(get_ssm_parameter_value "/TFE/TFE_LICENSE")"
 
+  # Database Settings
   tfe_database_host="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_HOST")"
   tfe_database_name="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_NAME")"
   tfe_database_user="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_USER")"
   tfe_database_password="$(get_ssm_parameter_value "/TFE/TFE_DATABASE_PASSWORD")"
 
+  # Redis Settings
   tfe_redis_host="$(get_ssm_parameter_value "/TFE/TFE_REDIS_HOST")"
   tfe_redis_password="$(get_ssm_parameter_value "/TFE/TFE_REDIS_PASSWORD")"
 
+  # Object Storage Settings
   tfe_object_storage_s3_region="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_REGION")"
   tfe_object_storage_s3_bucket="$(get_ssm_parameter_value "/TFE/TFE_OBJECT_STORAGE_S3_BUCKET")"
 
+  # Uptycs EDR Agent Settings
   uptycs_sensor_url="$(get_ssm_parameter_value "/TFE/UPTYCS_SENSOR_URL")"
   uptycs_owner_tag="$(get_ssm_parameter_value "/TFE/UPTYCS_OWNER_TAG")"
 
+  # Wait for the network to be available.
   wait_for_network
 
+  # Update the system and install required utilities.
   upgrade_system
   install_packages apt-transport-https ca-certificates curl gnupg unzip jq
 
@@ -170,14 +181,12 @@ main() {
 
   mkdir -p /tmp/uptycs
   if aws s3 cp "${uptycs_sensor_url}" /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1; then
-    dpkg -i /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1 || true
+    apt-get install -yq /tmp/uptycs/uptycs-sensor.deb >/dev/null 2>&1 || \
+      log "WARNING: Failed to install Uptycs sensor package. Check apt dependencies."
+    # Write osquery tags to the flags file so they persist across reboots.
     mkdir -p /etc/osquery
     printf -- '--osquery_tags=UPDATE/NONE,CCODE/HashiCorp,UT/20A7V,OWNER/%s\n' "${uptycs_owner_tag}" \
       >>/etc/osquery/osquery.flags
-    log "  Uptycs systemd units found:"
-    find /lib/systemd/system /etc/systemd/system -maxdepth 1 -name '*.service' -newer /tmp/uptycs/uptycs-sensor.deb 2>/dev/null | while read -r f; do log "    ${f}"; done
-    log "  Uptycs-related processes running:"
-    ps aux | grep -i uptycs | grep -v grep | while read -r p; do log "    ${p}"; done
     log "  Uptycs EDR agent installed and tags configured."
   else
     log "WARNING: Failed to download Uptycs sensor from ${uptycs_sensor_url}. Continuing without EDR agent."
@@ -186,13 +195,16 @@ main() {
 
   log "Setting up the PostgreSQL client."
 
+  # Setup Postgres' APT repository.
   install_packages "postgresql-common"
   /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 
+  # Install the PostgreSQL CLI tool.
   install_packages "postgresql-client-${postgresql_major_version}"
 
   log "Preparing to connect to the RDS instance."
 
+  # Grab the RDS credentials and configuration.
   rds_master_password_secret="$(find_secretsmanager_secret "rds!")"
 
   rds_master_username="$(
@@ -205,6 +217,8 @@ main() {
       jq -r '.password'
   )"
 
+  # Convenience function to execute SQL queries against the RDS instance, within
+  # main() to use the configuration already captured.
   execute_sql() {
     PGPASSWORD="${rds_master_password}" psql \
       -h "${tfe_database_host}" \
