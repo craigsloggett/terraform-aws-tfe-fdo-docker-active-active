@@ -102,18 +102,6 @@ variable "ec2_instance_ami_name" {
   }
 }
 
-variable "ec2_bastion_instance_name" {
-  type        = string
-  description = "The name of the Bastion EC2 instance."
-  default     = "Bastion Host"
-}
-
-variable "ec2_bastion_instance_type" {
-  type        = string
-  description = "The type (size) of the Bastion EC2 instance."
-  default     = "t3.nano"
-}
-
 variable "ec2_tfe_instance_name" {
   type        = string
   description = "The name of the TFE EC2 instance."
@@ -122,8 +110,9 @@ variable "ec2_tfe_instance_name" {
 
 variable "ec2_tfe_instance_type" {
   type        = string
-  description = "The type (size) of the TFE EC2 instance."
-  default     = "t3.medium"
+  nullable    = true
+  description = "The type (size) of the TFE EC2 instance. Defaults to t3.medium for x86_64 AMIs and t4g.medium for arm64 AMIs."
+  default     = null
 }
 
 variable "ec2_volume_size" {

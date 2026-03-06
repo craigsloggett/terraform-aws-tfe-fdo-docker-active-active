@@ -29,6 +29,11 @@ data "aws_ami" "debian" {
     name   = "root-device-type"
     values = ["ebs"]
   }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
 }
 
 data "aws_ami" "hc-base-ami" {
@@ -63,6 +68,8 @@ locals {
   bucket_name               = "${local.account_id}-${local.region}-terraform-enterprise"
   route53_alias_record_name = "${var.tfe_subdomain}.${var.route53_zone_name}"
   ami_id                    = var.ec2_instance_ami_name == "debian-13-amd64-20251117-2299" ? data.aws_ami.debian[0].id : data.aws_ami.hc-base-ami[0].id
+  ami_architecture          = strcontains(var.ec2_instance_ami_name, "arm64") ? "arm64" : "x86_64"
+  tfe_instance_type         = coalesce(var.ec2_tfe_instance_type, local.ami_architecture == "arm64" ? "t4g.medium" : "t3.medium")
 
   user_data_script = {
     "debian-13-amd64-20251117-2299" = "${path.module}/scripts/tfe-host-debian-user-data.sh"

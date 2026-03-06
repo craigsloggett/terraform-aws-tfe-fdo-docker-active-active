@@ -3,7 +3,7 @@
 resource "aws_launch_template" "tfe" {
   name                   = "tfe-web-asg-lt"
   image_id               = local.ami_id
-  instance_type          = var.ec2_tfe_instance_type
+  instance_type          = local.tfe_instance_type
   update_default_version = true
   user_data              = base64encode(file(local.user_data_script))
 
