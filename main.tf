@@ -29,11 +29,6 @@ data "aws_ami" "debian" {
     name   = "root-device-type"
     values = ["ebs"]
   }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
 }
 
 data "aws_ami" "hc-base-ami" {
