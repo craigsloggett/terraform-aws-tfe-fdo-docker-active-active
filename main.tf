@@ -37,7 +37,7 @@ data "aws_ami" "debian" {
 }
 
 data "aws_ami" "hc-base-ami" {
-  count       = var.ec2_instance_ami_name != "debian-13-amd64-20251117-2299" ? 1 : 0
+  count = var.ec2_instance_ami_name != "debian-13-amd64-20251117-2299" ? 1 : 0
   filter {
     name   = "name"
     values = ["${var.ec2_instance_ami_name}-*"]

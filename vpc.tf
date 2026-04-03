@@ -12,6 +12,9 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   default_network_acl_egress = [{
     "action" : "allow",
     "cidr_block" : "0.0.0.0/0",
