@@ -6,21 +6,23 @@ recursive:
 content: |-
   ## Usage
 
+  ### main.tf
   ```hcl
   {{ include "examples/main.tf" }}
+  ```
 
-  # variables.tf
-
+  ### variables.tf
+  ```hcl
   {{ include "examples/variables.tf" }}
+  ```
 
-  # providers.tf
-
+  ### providers.tf
+  ```hcl
   {{ include "examples/providers.tf" }}
   ```
 
+  ### terraform.tfvars
   ```hcl
-  # terraform.tfvars
-
   {{ include "examples/terraform.tfvars.example" }}
   ```
 
@@ -30,9 +32,9 @@ content: |-
 
   {{ .Modules }}
 
-  {{ .Resources }}
-
   {{ .Inputs }}
+
+  {{ .Resources }}
 
   {{ .Outputs }}
 

@@ -2,11 +2,11 @@ version: 2
 
 updates:
   - package-ecosystem: terraform
-    directory: /
+    directory: /examples
     schedule:
       interval: weekly
     commit-message:
-      prefix: chore
+      prefix: chore(docs)
 
   - package-ecosystem: github-actions
     directory: /
